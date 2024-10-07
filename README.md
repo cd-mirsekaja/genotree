@@ -1,1 +1,1 @@
-# geotree
+# genotree
