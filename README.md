@@ -1,6 +1,6 @@
 # genotree
 
-Pipeline for making phylogenetic trees out of a dataset of genomes and exons.
+Pipeline for making phylogenetic trees out of a dataset of genomes and exons. The scripts are written to run on a high performance cluster using SLURM.
 
 0_job_main_script.sh - calls 1_genomic_script.sh, 3_align_tree_script.sh and 5_speciesinfo.py. Creates working directory and required subfolders while running.
 
