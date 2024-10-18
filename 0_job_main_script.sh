@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-48:00
+#SBATCH --time=0-52:00
 #SBATCH --output=/user/rego3475/master_output/logs/0_job_main_script.%j.out
 #SBATCH --error=/user/rego3475/master_output/logs/0_job_main_script.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL

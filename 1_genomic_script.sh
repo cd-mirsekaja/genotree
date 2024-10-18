@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=10
 #SBATCH --mem=80G
-#SBATCH --time=0-20:00
+#SBATCH --time=0-22:00
 #SBATCH --output=./logs/automatic/1_genomic_script.%j.out
 #SBATCH --error=./logs/automatic/1_genomic_script.%j.err
 #SBATCH --mail-type=FAIL
