@@ -143,7 +143,7 @@ mv astral4.log logs/automatic/astral4_$enddate.log
 # move all output folders
 mv * ~/master_output/$enddate-all_out_FULL-DATASET
 
-cd ~/Main_analysis_II/
+cd ~/genotree/
 rm -r $WORK/wd-$startdate
 
 echo === end date and time is $enddate ===
