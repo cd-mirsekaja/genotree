@@ -36,7 +36,7 @@ echo === generating tree for $locus_id ===
 iqtree2 -s $locus_id-aligned.fasta -T 6 --tbe --alrt 10000
 
 # renames tree branches to simplify analysis
-python3 ~/Main_analysis_II/4_treenaming_script.py -t $locus_id-aligned.fasta.treefile -x ~/master_input/genome_master_library.xlsx
+python3 ~/genotree/4_treenaming_script.py -t $locus_id-aligned.fasta.treefile -x ~/master_input/genome_master_library.xlsx
 
 echo === moving files ===
 # move all combined, tree and miscellaneous files to their respective subfolders

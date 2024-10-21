@@ -44,7 +44,7 @@ for file in ./hmm/*.hmm; do
 
 	echo === starting hit search for $locus_id ===
 	# find hits for all loci in current genome
-	python3 ~/Main_analysis_II/2_hmmer2fasta_script.py -i1 "nhmmer-tables/$species_id-tables/$species_id-$locus_id-table.txt" -i2 "$genome"
+	python3 ~/genotree/2_hmmer2fasta_script.py -i1 "nhmmer-tables/$species_id-tables/$species_id-$locus_id-table.txt" -i2 "$genome"
 	mv $species_id-$locus_id-hits.fasta hits/$locus_id-allhits
 done
 

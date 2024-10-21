@@ -74,7 +74,7 @@ echo === starting genomic analysis scripts at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for creating hit.fasta files for every genome
 genomic_function() {
 	genomic_in="$1"
-	sbatch ~/Main_analysis_II/1_genomic_script.sh $genomic_in $cpu_count
+	sbatch ~/genotree/1_genomic_script.sh $genomic_in $cpu_count
 }
 
 # exports the function so GNU Parallel can access it
@@ -90,7 +90,7 @@ echo === starting locus analysis scripts at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for creating trees for each locus
 align_tree_function() {
 	locus_in=$(echo "${1%%-*}")
-	sbatch ~/Main_analysis_II/3_align_tree_script.sh $locus_in
+	sbatch ~/genotree/3_align_tree_script.sh $locus_in
 }
 
 # exports the function so GNU Parallel can access it
@@ -108,7 +108,7 @@ tree_count=$(ls treefiles-renamed/*.treefile | wc -l)
 for file in $genomic_files;do
 	acc_number=$(echo "${file%%.fasta}")
 	acc_count=$(grep $acc_number genome_list.log | wc -l)	
-	(echo -n "$acc_number | ";echo -n $(python3 ~/Main_analysis_II/5_speciesinfo.py -n "${file%%.fasta}" -x ~/master_input/genome_master_library.xlsx);echo " | found in $acc_count out of $tree_count trees") >> logfile.log
+	(echo -n "$acc_number | ";echo -n $(python3 ~/genotree/5_speciesinfo.py -n "${file%%.fasta}" -x ~/master_input/genome_master_library.xlsx);echo " | found in $acc_count out of $tree_count trees") >> logfile.log
 
 done
 
