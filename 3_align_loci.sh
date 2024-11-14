@@ -24,19 +24,13 @@ cat hits/$locus_id-allhits/* >> $locus_id-combined_hits.fasta
 
 # zip the original hit files for this locus and remove the empty folder
 zip $locus_id-allhits.zip hits/$locus_id-allhits/* -m
-rm -r hits/$locus_id-allhits
 mv $locus_id-allhits.zip ./hits
+rm -r ./hits/$locus_id-allhits
+
 
 echo === aligning hits for $locus_id ===
 # runs mafft on all combined hits for this exon
 mafft --thread 6 --auto $locus_id-combined_hits.fasta > $locus_id-aligned.fasta
-
-echo === generating tree for $locus_id ===
-# creates a tree for this aligned hitfile
-iqtree2 -s $locus_id-aligned.fasta -T 6 --tbe --alrt 10000
-
-# renames tree branches to simplify analysis
-python3 ~/genotree/4_treenaming_script.py -t $locus_id-aligned.fasta.treefile -x ~/master_input/genome_master_library.xlsx
 
 echo === moving files ===
 # move all combined, tree and miscellaneous files to their respective subfolders

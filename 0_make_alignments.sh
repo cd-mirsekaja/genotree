@@ -4,8 +4,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
 #SBATCH --time=0-52:00
-#SBATCH --output=/user/rego3475/master_output/logs/0_job_main_script.%j.out
-#SBATCH --error=/user/rego3475/master_output/logs/0_job_main_script.%j.err
+#SBATCH --output=/user/rego3475/master_output/logs/0_main_alignment.%j.out
+#SBATCH --error=/user/rego3475/master_output/logs/0_main_alignment.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de,simon.kaefer@uol.de
 
@@ -88,27 +88,26 @@ while squeue -u $USER | grep -q "1_"; do wait; done
 
 echo === starting locus analysis scripts at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for creating trees for each locus
-align_tree_function() {
+align_function() {
 	locus_in=$(echo "${1%%-*}")
-	sbatch ~/genotree/3_align_tree_script.sh $locus_in
+	sbatch ~/genotree/3_align_script.sh $locus_in
 }
 
 # exports the function so GNU Parallel can access it
-export -f align_tree_function
+export -f align_function
 
 # runs align_tree_script.sh in parallel for each specified locus
-echo "$locus_files" | parallel --eta --jobs $locuscount align_tree_function
+echo "$locus_files" | parallel --eta --jobs $locuscount align_function
 
 # waits for all trees to be created by checking the squeue command for a certain term
 while squeue -u $USER | grep -q "3_"; do wait; done
 
-# add a list of all used genomes to the logfile including the number of times a genome was found in the trees
+# add a list of all used genomes to the logfile
 (echo  ;echo $genomecount genomes: ) >> logfile.log
-tree_count=$(ls treefiles-renamed/*.treefile | wc -l)
 for file in $genomic_files;do
 	acc_number=$(echo "${file%%.fasta}")
 	acc_count=$(grep $acc_number genome_list.log | wc -l)	
-	(echo -n "$acc_number | ";echo -n $(python3 ~/genotree/5_speciesinfo.py -n "${file%%.fasta}" -x ~/master_input/genome_master_library.xlsx);echo " | found in $acc_count out of $tree_count trees") >> logfile.log
+	(echo -n "$acc_number | ";echo -n $(python3 ~/genotree/4_speciesinfo.py -n "${file%%.fasta}" -x ~/master_input/genome_master_library.xlsx)) >> logfile.log
 
 done
 
@@ -117,15 +116,10 @@ done
 (echo  ;echo $locuscount loci: )>> logfile.log
 for file in $locus_files; do
 	locus_id=$(echo "${file%%-NoDups_OK.fa}")
-	locus_line=$(grep $locus_id genome_list.log)
-	loc_sp_count=$(echo "${locus_line#*: }")
-	(echo "$locus_id | $loc_sp_count in tree") >> logfile.log
+	(echo "$locus_id") >> logfile.log
 done
 
-# make a combined tree out of individual gene trees and run astral on it (program installed locally)
-cat treefiles-renamed/*.treefile > treefiles-final/all-loci_combined.treefile
-~/programs/ASTER-Linux/bin/astral-pro3 -t 8 -o treefiles-final/all-loci_astralpro3.treefile treefiles-final/all-loci_combined.treefile 2>astralpro3.log
-~/programs/ASTER-Linux/bin/astral4 -t 8 -o treefiles-final/all-loci_astral4.treefile treefiles-final/all-loci_combined.treefile 2>astral4.log
+
 
 enddate=$(date '+%Y_%m_%d-%H_%M_%S')
 
@@ -136,9 +130,6 @@ mkdir ~/master_output/$enddate-all_out_FULL-DATASET
 # add the ending time to the logfile and move all log files
 (echo  ;echo Ending at: $enddate) >> logfile.log
 mv logfile.log logs/manual/logfile_$enddate.log
-mv genome_list.log logs/manual/genomelist_$enddate.log
-mv astralpro3.log logs/automatic/astral3pro_$enddate.log
-mv astral4.log logs/automatic/astral4_$enddate.log
 
 # move all output folders
 mv * ~/master_output/$enddate-all_out_FULL-DATASET

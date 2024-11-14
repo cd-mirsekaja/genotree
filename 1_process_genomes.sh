@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=10
 #SBATCH --mem=80G
-#SBATCH --time=0-22:00
+#SBATCH --time=0-24:00
 #SBATCH --output=./logs/automatic/1_genomic_script.%j.out
 #SBATCH --error=./logs/automatic/1_genomic_script.%j.err
 #SBATCH --mail-type=FAIL
@@ -53,9 +53,6 @@ echo === zipping and moving files ===
 zip $species_id-nhmmer.zip ./nhmmer-tables/$species_id-tables/* -m
 mv $species_id-nhmmer.zip ./nhmmer-tables
 rm -r ./nhmmer-tables/$species_id-tables
-
-# move all hit files to their respective subfolder
-#mv $species_id-*-hits.fasta ./hits
 
 # display end time in log file
 echo === end time for $species_id is $(date '+%H:%M:%S') ===
