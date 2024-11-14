@@ -36,9 +36,6 @@ echo === moving files ===
 # move all combined, tree and miscellaneous files to their respective subfolders
 mv $locus_id-aligned.fasta ./hits-aligned
 mv $locus_id-combined_hits.fasta ./hits-combined
-mv $locus_id-aligned.fasta.treefile ./treefiles-original
-mv $locus_id*-renamed.treefile ./treefiles-renamed
-mv $locus_id*.fasta.* ./trash
 
 # display end time in log file
 echo === end time for $locus_id is $(date '+%H:%M:%S') ===

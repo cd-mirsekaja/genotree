@@ -25,7 +25,7 @@ mkdir $WORK/wd-$startdate
 cd $WORK/wd-$startdate
 
 # make output directories
-mkdir hits hits-aligned hits-combined hmm nhmmer-tables treefiles-original treefiles-renamed treefiles-final trash
+mkdir hits hits-aligned hits-combined hmm nhmmer-tables trash
 mkdir logs
 mkdir logs/automatic
 mkdir logs/manual
@@ -125,14 +125,14 @@ enddate=$(date '+%Y_%m_%d-%H_%M_%S')
 
 echo === moving files ===
 # make folder for all outputs of this run
-mkdir ~/master_output/$enddate-all_out_FULL-DATASET
+mkdir ~/master_output/individual_runs/$enddate-all_out_FULL-DATASET
 
 # add the ending time to the logfile and move all log files
 (echo  ;echo Ending at: $enddate) >> logfile.log
 mv logfile.log logs/manual/logfile_$enddate.log
 
 # move all output folders
-mv * ~/master_output/$enddate-all_out_FULL-DATASET
+mv * ~/master_output/individual_runs/$enddate-all_out_FULL-DATASET
 
 cd ~/genotree/
 rm -r $WORK/wd-$startdate
