@@ -4,10 +4,12 @@
 #SBATCH --cpus-per-task=6
 #SBATCH --mem=60G
 #SBATCH --time=0-12:00
-#SBATCH --output=./logs/automatic/3_align_tree_script.%j.out
-#SBATCH --error=./logs/automatic/3_align_tree_script.%j.err
+#SBATCH --output=./logs/automatic/3_align_loci.%j.out
+#SBATCH --error=./logs/automatic/3_align_loci.%j.err
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
+
+# gets a locusID as input and aligns all hit files for respective locus
 
 module load hpc-env/13.1
 module load MAFFT/7.505-GCC-13.1.0-with-extensions

@@ -4,8 +4,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
 #SBATCH --time=0-52:00
-#SBATCH --output=/user/rego3475/master_output/logs/0_main_alignment.%j.out
-#SBATCH --error=/user/rego3475/master_output/logs/0_main_alignment.%j.err
+#SBATCH --output=/user/rego3475/master_output/logs/0_make_alignment.%j.out
+#SBATCH --error=/user/rego3475/master_output/logs/0_make_alignment.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de,simon.kaefer@uol.de
 
@@ -38,7 +38,7 @@ touch genome_list.log
 #genomecount=10
 #locuscount=10
 
-# when running with full dataset, use these
+# when running with full dataset, use these - sets genomes and exons to all files in respective folders
 genomecount=$(ls /nfs/data/zapp2497/genomes/raw_fasta/ | wc -l)
 locuscount=$(ls ~/master_input/locus-fa_1105_nucleotide/ | wc -l)
 
@@ -74,7 +74,7 @@ echo === starting genomic analysis scripts at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for creating hit.fasta files for every genome
 genomic_function() {
 	genomic_in="$1"
-	sbatch ~/genotree/1_genomic_script.sh $genomic_in $cpu_count
+	sbatch ~/genotree/1_process_genomes.sh $genomic_in $cpu_count
 }
 
 # exports the function so GNU Parallel can access it
@@ -87,10 +87,10 @@ echo "$genomic_files" | parallel --eta --jobs $genomecount genomic_function
 while squeue -u $USER | grep -q "1_"; do wait; done
 
 echo === starting locus analysis scripts at $(date '+%d.%m.%Y %H:%M:%S') ===
-# prepares a function that runs the script for creating trees for each locus
+# prepares a function that runs the script for aligning all hits for each locus
 align_function() {
 	locus_in=$(echo "${1%%-*}")
-	sbatch ~/genotree/3_align_script.sh $locus_in
+	sbatch ~/genotree/3_align_loci.sh $locus_in $1
 }
 
 # exports the function so GNU Parallel can access it

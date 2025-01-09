@@ -4,10 +4,12 @@
 #SBATCH --cpus-per-task=10
 #SBATCH --mem=80G
 #SBATCH --time=0-24:00
-#SBATCH --output=./logs/automatic/1_genomic_script.%j.out
-#SBATCH --error=./logs/automatic/1_genomic_script.%j.err
+#SBATCH --output=./logs/automatic/1_process_genomes.%j.out
+#SBATCH --error=./logs/automatic/1_process_genomes.%j.err
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
+
+# gets a genome and finds hits for every exon in the dataset for that genome.
 
 module load hpc-env/13.1
 module load HMMER/3.4-gompi-2023a
@@ -44,7 +46,7 @@ for file in ./hmm/*.hmm; do
 
 	echo === starting hit search for $locus_id ===
 	# find hits for all loci in current genome
-	python3 ~/genotree/2_hmmer2fasta_script.py -i1 "nhmmer-tables/$species_id-tables/$species_id-$locus_id-table.txt" -i2 "$genome"
+	python3 ~/genotree/2_find_hits.py -i1 "nhmmer-tables/$species_id-tables/$species_id-$locus_id-table.txt" -i2 "$genome"
 	mv $species_id-$locus_id-hits.fasta hits/$locus_id-allhits
 done
 
