@@ -25,10 +25,10 @@ mkdir logs
 mkdir output
 
 # use for testing
-#alignment_count=2
+alignment_count=5
 
 # use for full dataset
-alignment_count=$(ls ~/master_input/all_hits_aligned/*-renamed.fasta | wc -l)
+#alignment_count=$(ls ~/master_input/all_hits_aligned/*-renamed.fasta | wc -l)
 
 
 alignment_files=$(ls ~/master_input/all_hits_aligned/*-renamed.fasta | head -n $alignment_count)
@@ -36,7 +36,7 @@ alignment_files=$(ls ~/master_input/all_hits_aligned/*-renamed.fasta | head -n $
 echo === starting alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for scoring each alignment
 scoring_function() {
-	locus_in=$(echo "${file##*/}" | cut -d'-' -f1)
+	locus_in=$(echo "${1##*/}" | cut -d'-' -f1)
 	sbatch ~/genotree/6_rate_alignments.sh $locus_in
 }
 
