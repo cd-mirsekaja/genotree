@@ -12,8 +12,8 @@
 
 startdate=$(date '+%Y_%m_%d-%H_%M_%S')
 
-mkdir $WORK/wd-$startdate-treemaking
-cd $WORK/wd-$startdate-treemaking
+mkdir $WORK/wd-tree_generation-$startdate
+cd $WORK/wd-tree_generation-$startdate
 
 mkdir treefiles-original treefiles-renamed treefiles-final logs trash
 mkdir logs/automatic
@@ -50,6 +50,5 @@ enddate=$(date '+%Y_%m_%d-%H_%M_%S')
 mkdir ~/master_output/phylo_trees/$enddate-trees
 mv * ~/master_output/phylo_trees/$enddate-trees
 
-cd genotree
-rm -r $WORK/wd-$startdate-treemaking
-
+cd ~/genotree
+rm -r $WORK/wd-tree_generation-$startdate

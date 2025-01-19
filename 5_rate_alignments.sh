@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=10
 #SBATCH --mem=60G
-#SBATCH --time=0-10:00
+#SBATCH --time=0-2:00
 #SBATCH --output=./logs/6_rate_alignments.%j.out
 #SBATCH --error=./logs/6_rate_alignments.%j.err
 #SBATCH --mail-type=FAIL
