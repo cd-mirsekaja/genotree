@@ -107,7 +107,7 @@ while squeue -u $USER | grep -q "3_"; do wait; done
 for file in $genomic_files;do
 	acc_number=$(echo "${file%%.fasta}")
 	acc_count=$(grep $acc_number genome_list.log | wc -l)	
-	(echo -n "$acc_number | ";echo -n $(python3 ~/genotree/4_speciesinfo.py -n "${file%%.fasta}" -x ~/master_input/genome_master_library.xlsx)) >> logfile.log
+	(echo -n "$acc_number | ";echo -n $(python3 ~/genotree/utilities/speciesinfo.py -n "${file%%.fasta}" -x ~/master_input/genome_master_library.xlsx)) >> logfile.log
 
 done
 
