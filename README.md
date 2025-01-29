@@ -40,6 +40,9 @@ The pipeline consists of multiple scripts working together. Input files and fold
 **Utilities:**
 
 speciesinfo.py - gets general information for specified taxon
+
 total_score.py - calculates total mean and median scores for supplied AliGROOVE matrices
+
 rename_taxa.sh - calls rename_script.sh for all supplied .fasta-files
+
 rename_script.py - renames genes in supplied .fasta file for processing with AliGROOVE
