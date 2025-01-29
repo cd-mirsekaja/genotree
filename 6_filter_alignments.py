@@ -55,5 +55,5 @@ with open(args.input_alignment) as alignment_content, open(f"{args.locus_id}_{ar
 		if write_flag:
 			new_alignment.write(line)  # Write line to the output file
 	
-    print(f"Filtered alignment written to {new_alignment.name}")
+	print(f"Filtered alignment written to {new_alignment.name}")
 
