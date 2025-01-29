@@ -1,22 +1,45 @@
 # genotree
 
 Pipeline for making phylogenetic trees out of a dataset of genomes and exons. The scripts are written to run on a high performance cluster using SLURM.
-The pipeline consists of multiple scripts working together.
+The pipeline consists of multiple scripts working together. Input files and folders are set inside the scripts.
 
-0_make_alignments.sh - calls 1_process_genomes.sh, 3_align_loci.sh and 5_speciesinfo.py. Creates working directory and required subfolders while running.
+**Main Pipeline:**
 
-1_process_genomes.sh - finds hits for each locus in specified genome file. Calls 2_find_hits.py
+0_make_alignments.sh
+    - calls 1_process_genomes.sh, 3_align_loci.sh and utilities/speciesinfo.py
+    - Creates working directory and required subfolders while running.
 
-2_find_hits.py - turns nhmmer-tables into fasta files that contain hits for each locus
+1_process_genomes.sh
+    - calls 2_find_hits.py
+    - finds hits for each locus in specified genome file.
 
-3_align_loci.sh - aligns hits for specified locus.
+2_find_hits.py
+    - uses nhmmer-tables to create fasta files that contain hits for each locus
 
-4_speciesinfo.py - gets general information for specified taxon
+3_align_loci.sh
+    - aligns hits for specified locus.
 
-5_rate_alignments.sh - gives alignment ratings and removes bad ones
+4_process_alignments.sh
+    - calls 5_rate_alignments.sh, 6_filter_alignments.py and utilities/total_score.py
+    - generates AliGROOVE-Scores for all alignments and returns .fasta-files that are filtered to not contain any sequences with a score below the supplied threshold (0.35)
 
-6_make_trees.sh - creates phylogenetic trees from the supplied alignments. Calls 7_rename_trees.py
+5_rate_alignments.sh
+    - generates AliGROOVE matrices with similarity scores for all sequence alignments.
 
-7_rename_trees.py - renames tree tips to be more readable
+6_filter_alignments.py
+    - filters the supplied sequence alignments for the score threshold
+
+7_make_trees.sh
+    - calls 8_rename_trees.py
+    - creates individual phylogenetic trees from the supplied alignments and combines them into a supertree
+
+8_rename_trees.py
+    - renames tree tips to make postprocessing easier
 
 
+**Utilities:**
+
+speciesinfo.py - gets general information for specified taxon
+total_score.py - calculates total mean and median scores for supplied AliGROOVE matrices
+rename_taxa.sh - calls rename_script.sh for all supplied .fasta-files
+rename_script.py - renames genes in supplied .fasta file for processing with AliGROOVE
