@@ -12,8 +12,19 @@ ending = args.file.split(".")[-1]
 with open(args.file, 'r') as file:
 	file_content = file.read()
 
+# the following function was written with the help of ChatGPT
+def transform_content(file_content):
+    # Define the regex pattern for the transformation
+    pattern = r"(GC[A-Za-z0-9_]+\.\d+)\|[^|]+\|([A-Za-z0-9_.]+)\|(\d+)\|(\d+)"
+    replacement = r"\1-\2-\3-\4"  # Replacement pattern using captured groups
+
+    # Apply re.sub to replace all occurrences in the file content
+    transformed_content = re.sub(pattern, replacement, file_content)
+
+    return transformed_content
+
 if ending=="fasta":
-    file_content = re.sub(r'\|locus_E\d+-NoDups_OK\|[^\n]+\n', '\n', file_content)
+    file_content = transform_content(file_content)
 elif ending=="treefile":
     file_content = re.sub(r'\|locus_E\d+-NoDups_OK\|[^:]+:', ':', file_content)
 else:

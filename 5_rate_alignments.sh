@@ -2,10 +2,10 @@
 
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=10
-#SBATCH --mem=60G
-#SBATCH --time=0-2:00
-#SBATCH --output=./logs/6_rate_alignments.%j.out
-#SBATCH --error=./logs/6_rate_alignments.%j.err
+#SBATCH --mem=80G
+#SBATCH --time=0-12:00
+#SBATCH --output=./logs/5_rate_alignments.%j.out
+#SBATCH --error=./logs/5_rate_alignments.%j.err
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
@@ -16,4 +16,4 @@ source ~/.bashrc
 locus_id="$1"
 
 echo === starting scoring for locus $locus_id at $(date '+%H:%M:%S') ===
-~/programs/Aligroove/AliGROOVE_v.1.08.pl -i ~/master_input/all_hits_aligned/$locus_id-renamed.fasta
+~/programs/Aligroove/AliGROOVE_v.1.08.pl -i ~/master_input/all_hits_aligned_renamed/$locus_id-renamed.fasta

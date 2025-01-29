@@ -21,8 +21,8 @@ mkdir logs/manual
 
 
 # makes a phylotree for each alignment and renames it to be better readable
-for file in master_input/aligned_hits;do
-    locus_id=$(echo "${file%%-*}")
+for file in ~/master_input/all_hits_aligned_revised;do
+    locus_id=$(echo "${file##*/}" | cut -d'-' -f1)
     echo === generating tree for $locus_id ===
     # creates a tree for this aligned hitfile
     iqtree2 -s $file -T 6 --tbe --alrt 10000    

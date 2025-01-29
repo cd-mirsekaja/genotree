@@ -3,9 +3,9 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-30:00
-#SBATCH --output=/user/rego3475/master_output/logs/5_process_alignments.%j.out
-#SBATCH --error=/user/rego3475/master_output/logs/5_process_alignments.%j.err
+#SBATCH --time=0-24:00
+#SBATCH --output=/user/rego3475/master_output/logs/4_process_alignments.%j.out
+#SBATCH --error=/user/rego3475/master_output/logs/4_process_alignments.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
@@ -22,16 +22,17 @@ mkdir $WORK/wd-al_scoring-$startdate
 cd $WORK/wd-al_scoring-$startdate
 
 mkdir logs
-mkdir output
+mkdir aligroove_output alignments_filtered filter_tables
+mkdir aligroove_output/txt aligroove_output/svg 
 
-# use for testing
-#alignment_count=5
+# low amount of files, use for testing
+alignment_count=5
 
-# use for full dataset
-alignment_count=$(ls ~/master_input/all_hits_aligned/*-renamed.fasta | wc -l)
+# all files, use for full dataset
+#alignment_count=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | wc -l)
 
-
-alignment_files=$(ls ~/master_input/all_hits_aligned/*-renamed.fasta | head -n $alignment_count)
+# save all relevant alignment files in a variable
+alignment_files=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | head -n $alignment_count)
 
 echo === starting alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for scoring each alignment
@@ -46,22 +47,43 @@ export -f scoring_function
 # runs 5_rate_alignments.sh in parallel for each specified exon
 echo "$alignment_files" | parallel --eta --jobs $alignment_count scoring_function
 
-# waits for all genome files to be processed and nhmmer-tables to be created by checking the squeue command for a certain term
+# waits for all alignments to be rated by checking the squeue command for a certain term
 while squeue -u $USER | grep -q "5_"; do wait; done
 
-mv ~/master_input/all_hits_aligned/*-renamed.txt ./output
-mv ~/master_input/all_hits_aligned/*-renamed.svg ./output
+mv ~/master_input/all_hits_aligned_renamed/*-renamed.txt ./aligroove_output/txt
+mv ~/master_input/all_hits_aligned_renamed/*-renamed.svg ./aligroove_output/svg
 
-echo === compiling total mean and median scores ===
+echo === calculating total mean and median scores ===
 printf "locusID;scoreMedian;scoreMean\n" > total_scores.csv
 
-for file in ./output/*.txt; do
+# calculate total mean and median scores for all alignments
+for file in ./aligroove_output/txt/*-renamed.txt; do
     locus_id=$(echo "${file##*/}" | cut -d'_' -f5 | cut -d'-' -f1)
     echo $locus_id
     python3 ~/genotree/utilities/total_score.py -f $file -l $locus_id
 done
 
-mv total_scores.csv ./output
+# move score table to output folder
+mv total_scores.csv ./aligroove_output
+
+
+# set filter threshold
+threshold=0.35
+echo === filtering alignments for score threshold $threshold ===
+for file in alignment_files; do
+    # get ID for current locus
+    locus_id=$(echo "${file##*/}" | cut -d'-' -f1)
+    aligroove_matrix=./aligroove_output/txt/AliGROOVE_seqsim_matrix_$locus_id-renamed.txt
+
+    # filters alignments for current locus for all exons with a score under the given threshold
+    python3 6_filter_alignments.py -d $aligroove_matrix -a $file -l $locus_id -t $threshold
+done
+
+echo === moving files ===
+
+mv *-filtered.fasta ./alignments_filtered
+mv *-values.csv ./filter_tables
+
 
 enddate=$(date '+%Y_%m_%d-%H_%M_%S')
 mkdir ~/master_output/refined_alignments/$enddate-alignments_FULL-DATASET

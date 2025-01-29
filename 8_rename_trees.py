@@ -57,4 +57,3 @@ genome_list_out.write('\n')
 genome_list_out.write(species_string)
 genome_list_out.close()
 
-
