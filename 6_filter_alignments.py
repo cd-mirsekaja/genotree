@@ -5,10 +5,10 @@ Created on Mon Jan 20 17:39:48 2025
 
 @author: Ronja Rösner
 
-Gets a aligroove score matrix, an alignment file, a maximum threshold and a locus id as inputs. Outputs table containing all values from the input matrix that are below the threshold with their corresponding row and column names as well as an alignment file filtered for the threshold.
+Gets an aligroove score matrix, an alignment file, a maximum threshold and a locus id as inputs. Outputs table containing all values from the input matrix that are below the threshold with their corresponding row and column names as well as an alignment file filtered for the threshold.
 """
 
-import pandas as pd
+import pandas as pd # type: ignore
 import argparse
 
 
@@ -46,26 +46,14 @@ with open(f"{args.locus_id}_{args.threshold}-values"+".csv","w") as file:
 	print(f"Low values saved as {file.name}")
 
 
-alignment_content=open(args.input_alignment)
-new_alignment=open(f"{args.locus_id}_{args.threshold}-filtered.fasta","w")
-
-# the following 12 lines were written with the help of ChatGPT
-write_flag = True  # Determines whether to write lines to output
-for line in alignment_content:
+with open(args.input_alignment) as alignment_content, open(f"{args.locus_id}_{args.threshold}-filtered.fasta", "w") as new_alignment:
 	write_flag = True  # Determines whether to write lines to output
 	for line in alignment_content:
 		if line.startswith(">"):  # If it's a headline
 			item_id = line[1:].strip()  # Extract item ID (remove > and strip whitespace)
-			if item_id in low_values:  # If headline matches an item in the table
-				write_flag = False  # Stop writing until next headline
-			else:
-				write_flag = True  # Resume writing for other headlines
+			write_flag = item_id not in low_values  # Set write_flag based on item_id presence in low_values
 		if write_flag:
 			new_alignment.write(line)  # Write line to the output file
-
-print(f"Filtered alignment written to {new_alignment.name}")
-
-alignment_content.close()
-new_alignment.close()
-
+	
+    print(f"Filtered alignment written to {new_alignment.name}")
 

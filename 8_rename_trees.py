@@ -8,7 +8,7 @@ Created on Fri Apr 26 17:10:48 2024
 
 import re
 import argparse
-import pandas as pd
+import pandas as pd # type: ignore
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-t', '--tree' , dest = 'tree_file' , type = str , default= None , required= True, help = 'input treefile')

@@ -4,9 +4,9 @@ import re
 from sys import argv
 import argparse
 #import Bio
-from Bio import SeqIO
-from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
+from Bio import SeqIO # type: ignore
+from Bio.Seq import Seq # type: ignore
+from Bio.SeqRecord import SeqRecord # type: ignore
 
 ##### Documentation #####
 # This script requires an input of an nhmmer-result file, formatted using the --tblout modifier. There also needs to be a genome reference formatted as .fasta passed to the program.
