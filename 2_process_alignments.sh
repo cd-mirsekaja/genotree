@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-5:00
+#SBATCH --time=0-50:00
 #SBATCH --output=/user/rego3475/master_output/logs/2_process_alignments.%j.out
 #SBATCH --error=/user/rego3475/master_output/logs/2_process_alignments.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -26,10 +26,10 @@ mkdir aligroove_output alignments_filtered filter_tables
 mkdir aligroove_output/txt aligroove_output/svg 
 
 # low amount of files, use for testing
-alignment_count=5
+#alignment_count=5
 
 # all files, use for full dataset
-#alignment_count=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | wc -l)
+alignment_count=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | wc -l)
 
 # save all relevant alignment files in a variable
 alignment_files=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | head -n $alignment_count)
@@ -59,7 +59,7 @@ printf "locusID;scoreMedian;scoreMean\n" > total_scores.csv
 # calculate total mean and median scores for all alignments
 for file in ./aligroove_output/txt/*-renamed.txt; do
     locus_id=$(echo "${file##*/}" | cut -d'_' -f5 | cut -d'-' -f1)
-    echo $locus_id
+    echo - $locus_id -
     python3 ~/genotree/utilities/total_score.py -f $file -l $locus_id
 done
 
@@ -74,8 +74,7 @@ for file in $alignment_files; do
     # get ID for current locus
     locus_id=$(echo "${file##*/}" | cut -d'-' -f1)
     aligroove_matrix=./aligroove_output/txt/AliGROOVE_seqsim_matrix_$locus_id-renamed.txt
-
-    echo Locus ID: $locus_id - AliGROOVE matrix: $aligroove_matrix
+    echo Locus ID: $locus_id
     # filters alignments for current locus for all exons with a score under the given threshold
     python3 ~/genotree/2-2_filter_alignments.py -d $aligroove_matrix -a $file -l $locus_id -t $threshold
 done

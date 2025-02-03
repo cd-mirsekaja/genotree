@@ -24,8 +24,6 @@ args, unknown = parser.parse_known_args()
 # import matrix with the total mean and median scores for all loci
 #total_score_matrix = pd.read_csv(f"{args.dir_scores}/total_scores.csv",sep=";")
 
-print(f"- Starting filter for locus {args.locus_id} with file {args.input_alignment}, table {args.input_table} and threshold {args.threshold} -")
-
 # import matrix with all values for this locus from file
 score_matrix = pd.read_csv(args.input_table,sep="\t",index_col=0)
 # create filtered matrix with only values lower than or equal to the threshold
