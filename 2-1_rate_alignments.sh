@@ -3,9 +3,9 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=10
 #SBATCH --mem=80G
-#SBATCH --time=0-12:00
-#SBATCH --output=./logs/5_rate_alignments.%j.out
-#SBATCH --error=./logs/5_rate_alignments.%j.err
+#SBATCH --time=0-4:00
+#SBATCH --output=./logs/2-1_rate_alignments.%j.out
+#SBATCH --error=./logs/2-1_rate_alignments.%j.err
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 

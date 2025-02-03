@@ -4,8 +4,8 @@
 #SBATCH --cpus-per-task=6
 #SBATCH --mem=60G
 #SBATCH --time=0-12:00
-#SBATCH --output=./logs/automatic/3_align_loci.%j.out
-#SBATCH --error=./logs/automatic/3_align_loci.%j.err
+#SBATCH --output=./logs/automatic/1-3_align_loci.%j.out
+#SBATCH --error=./logs/automatic/1-3_align_loci.%j.err
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 

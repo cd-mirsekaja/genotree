@@ -3,9 +3,9 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-24:00
-#SBATCH --output=/user/rego3475/master_output/logs/4_process_alignments.%j.out
-#SBATCH --error=/user/rego3475/master_output/logs/4_process_alignments.%j.err
+#SBATCH --time=0-5:00
+#SBATCH --output=/user/rego3475/master_output/logs/2_process_alignments.%j.out
+#SBATCH --error=/user/rego3475/master_output/logs/2_process_alignments.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
@@ -38,13 +38,13 @@ echo === starting alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for scoring each alignment
 scoring_function() {
 	locus_in=$(echo "${1##*/}" | cut -d'-' -f1)
-	sbatch ~/genotree/5_rate_alignments.sh $locus_in
+	sbatch ~/genotree/2-1_rate_alignments.sh $locus_in
 }
 
 # exports the function so GNU Parallel can access it
 export -f scoring_function
 
-# runs 5_rate_alignments.sh in parallel for each specified exon
+# runs 2-1_rate_alignments.sh in parallel for each specified exon
 echo "$alignment_files" | parallel --eta --jobs $alignment_count scoring_function
 
 # waits for all alignments to be rated by checking the squeue command for a certain term
@@ -70,13 +70,14 @@ mv total_scores.csv ./aligroove_output
 # set filter threshold
 threshold=0.35
 echo === filtering alignments for score threshold $threshold ===
-for file in alignment_files; do
+for file in $alignment_files; do
     # get ID for current locus
     locus_id=$(echo "${file##*/}" | cut -d'-' -f1)
     aligroove_matrix=./aligroove_output/txt/AliGROOVE_seqsim_matrix_$locus_id-renamed.txt
 
+    echo Locus ID: $locus_id - AliGROOVE matrix: $aligroove_matrix
     # filters alignments for current locus for all exons with a score under the given threshold
-    python3 6_filter_alignments.py -d $aligroove_matrix -a $file -l $locus_id -t $threshold
+    python3 ~/genotree/2-2_filter_alignments.py -d $aligroove_matrix -a $file -l $locus_id -t $threshold
 done
 
 echo === moving files ===

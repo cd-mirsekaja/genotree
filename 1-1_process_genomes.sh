@@ -4,8 +4,8 @@
 #SBATCH --cpus-per-task=10
 #SBATCH --mem=80G
 #SBATCH --time=0-24:00
-#SBATCH --output=./logs/automatic/1_process_genomes.%j.out
-#SBATCH --error=./logs/automatic/1_process_genomes.%j.err
+#SBATCH --output=./logs/automatic/1-1_process_genomes.%j.out
+#SBATCH --error=./logs/automatic/1-1_process_genomes.%j.err
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
@@ -46,7 +46,7 @@ for file in ./hmm/*.hmm; do
 
 	echo === starting hit search for $locus_id ===
 	# find hits for all loci in current genome
-	python3 ~/genotree/2_find_hits.py -i1 "nhmmer-tables/$species_id-tables/$species_id-$locus_id-table.txt" -i2 "$genome"
+	python3 ~/genotree/1-2_find_hits.py -i1 "nhmmer-tables/$species_id-tables/$species_id-$locus_id-table.txt" -i2 "$genome"
 	mv $species_id-$locus_id-hits.fasta hits/$locus_id-allhits
 done
 

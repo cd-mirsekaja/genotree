@@ -4,8 +4,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
 #SBATCH --time=0-10:00
-#SBATCH --output=/user/rego3475/master_output/logs/6_make_trees.%j.out
-#SBATCH --error=/user/rego3475/master_output/logs/6_make_trees.%j.err
+#SBATCH --output=/user/rego3475/master_output/logs/3_make_trees.%j.out
+#SBATCH --error=/user/rego3475/master_output/logs/3_make_trees.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
@@ -28,7 +28,7 @@ for file in ~/master_input/all_hits_aligned_revised;do
     iqtree2 -s $file -T 6 --tbe --alrt 10000    
 
     # renames tree branches to simplify analysis
-    python3 ~/genotree/7_rename_trees.py -t $file.treefile -x ~/master_input/genome_master_library.xlsx
+    python3 ~/genotree/3-1_rename_trees.py -t $file.treefile -x ~/master_input/genome_master_library.xlsx
 
 done
 
