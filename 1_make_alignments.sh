@@ -84,7 +84,7 @@ export -f genomic_function
 echo "$genomic_files" | parallel --eta --jobs $genomecount genomic_function
 
 # waits for all genome files to be processed and nhmmer-tables to be created by checking the squeue command for a certain term
-while squeue -u $USER | grep -q "1_"; do wait; done
+while squeue -u $USER | grep -q "1-1"; do wait; done
 
 echo === starting locus analysis scripts at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for aligning all hits for each locus
@@ -100,7 +100,7 @@ export -f align_function
 echo "$locus_files" | parallel --eta --jobs $locuscount align_function
 
 # waits for all trees to be created by checking the squeue command for a certain term
-while squeue -u $USER | grep -q "3_"; do wait; done
+while squeue -u $USER | grep -q "1-3"; do wait; done
 
 # add a list of all used genomes to the logfile
 (echo  ;echo $genomecount genomes: ) >> logfile.log

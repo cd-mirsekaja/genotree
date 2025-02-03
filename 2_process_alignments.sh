@@ -48,7 +48,7 @@ export -f scoring_function
 echo "$alignment_files" | parallel --eta --jobs $alignment_count scoring_function
 
 # waits for all alignments to be rated by checking the squeue command for a certain term
-while squeue -u $USER | grep -q "5_"; do wait; done
+while squeue -u $USER | grep -q "2-1"; do wait; done
 
 mv ~/master_input/all_hits_aligned_renamed/*-renamed.txt ./aligroove_output/txt
 mv ~/master_input/all_hits_aligned_renamed/*-renamed.svg ./aligroove_output/svg
