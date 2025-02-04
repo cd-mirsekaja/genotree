@@ -48,7 +48,9 @@ export -f scoring_function
 echo "$alignment_files" | parallel --eta --jobs $alignment_count scoring_function
 
 # waits for all alignments to be rated by checking the squeue command for a certain term
-while squeue -u $USER | grep -q "2-1"; do wait; done
+while squeue -u $USER | grep -q "2-1"; do sleep 1; wait; done
+
+echo === finished alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 
 mv ~/master_input/all_hits_aligned_renamed/*-renamed.txt ./aligroove_output/txt
 mv ~/master_input/all_hits_aligned_renamed/*-renamed.svg ./aligroove_output/svg
@@ -65,7 +67,6 @@ done
 
 # move score table to output folder
 mv total_scores.csv ./aligroove_output
-
 
 # set filter threshold
 threshold=0.35

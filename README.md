@@ -5,35 +5,35 @@ The pipeline consists of multiple scripts working together. Input files and fold
 
 **Main Pipeline:**
 
-0_make_alignments.sh
+1_make_alignments.sh
     - calls 1_process_genomes.sh, 3_align_loci.sh and utilities/speciesinfo.py
     - Creates working directory and required subfolders while running.
 
-1_process_genomes.sh
+1-1_process_genomes.sh
     - calls 2_find_hits.py
     - finds hits for each locus in specified genome file.
 
-2_find_hits.py
+1-2_find_hits.py
     - uses nhmmer-tables to create fasta files that contain hits for each locus
 
-3_align_loci.sh
+1-3_align_loci.sh
     - aligns hits for specified locus.
 
-4_process_alignments.sh
+2_process_alignments.sh
     - calls 5_rate_alignments.sh, 6_filter_alignments.py and utilities/total_score.py
     - generates AliGROOVE-Scores for all alignments and returns .fasta-files that are filtered to not contain any sequences with a score below the supplied threshold (0.35)
 
-5_rate_alignments.sh
+2-1_rate_alignments.sh
     - generates AliGROOVE matrices with similarity scores for all sequence alignments.
 
-6_filter_alignments.py
+2-2_filter_alignments.py
     - filters the supplied sequence alignments for the score threshold
 
-7_make_trees.sh
+3_make_trees.sh
     - calls 8_rename_trees.py
     - creates individual phylogenetic trees from the supplied alignments and combines them into a supertree
 
-8_rename_trees.py
+3-1_rename_trees.py
     - renames tree tips to make postprocessing easier
 
 
