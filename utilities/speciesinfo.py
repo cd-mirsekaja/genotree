@@ -4,70 +4,77 @@
 Created on Fri Apr 26 16:13:16 2024
 
 @author: Ronja Roesner
+
+Tool for retrieving taxonomic and habitat information from a database using an accession number
 """
 
-import argparse
-import pandas as pd
+import argparse, sqlite3, os
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-n', '--acnumber' , dest = 'ac_number' , type = str , default= None , required= True, help = 'input accession number')
-parser.add_argument('-x', '--table' , dest = 'library' , type = str , default= None , required= True, help = 'input excel table')
+parser.add_argument('-n', '--acc_number' , dest = 'acc_number' , type = str , default= None , required= True, help = 'input accession number')
+parser.add_argument('-d', '--database' , dest = 'library' , type = str , default= None , required= True, help = 'input sql database')
 args, unknown = parser.parse_known_args()
 
-table_taxonomy =  pd.read_excel(args.library, usecols="A:E",header=0)
-table_habitats = pd.read_excel(args.library, usecols="B,G:J",header=0)
+db_file=args.library
 
-def find_species(table,ac_number):
-	# Search for the accession number in the table
-	matched_lines = table[table[table.columns[1]] == ac_number].index.tolist()
-
-	# output the species and taxon group
-	index_values = table.iloc[matched_lines,0].values.tolist()
-	species_values = table.iloc[matched_lines,2].values.tolist()
-	authority_values = table.iloc[matched_lines,3].values.tolist()
-	taxgroup_values = table.iloc[matched_lines,4].values.tolist()
-	
-	# check if anything was found in the table
-	if species_values==[]:
-		return "not found", "not found", "not found", "not found"
-	else:
-		# extract the first list element and convert it into a string
-		species_str=''.join(map(str, species_values[0]))
-		taxgroup_str = ''.join(map(str, taxgroup_values[0]))
-		authority_str = ''.join(map(str, authority_values[0]))
-		index_str = str(index_values[0])
-		return species_str, authority_str, taxgroup_str, index_str
-
-def find_habitat(table,ac_number):
-	matched_lines = table[table[table.columns[0]] == ac_number].index.tolist()
-	out_list=[]
-	
-	if table.iloc[matched_lines,1].values==1:
-		out_list.append("marine")
-		
-	if table.iloc[matched_lines,2].values==1:
-		out_list.append("brackish")
-		
-	if table.iloc[matched_lines,3].values==1:
-		out_list.append("freshwater")
-		
-	if table.iloc[matched_lines,4].values==1:
-		out_list.append("terrestrial")
-		
-	if out_list!=[]:
-		out_string=', '.join(map(str,out_list))
-	else:
-		out_string=''.join("habitats unknown")
-		
-	return out_string
-
-species,authority,taxgroup,index=find_species(table_taxonomy,args.ac_number)
-habitats=find_habitat(table_habitats, args.ac_number)
-
-#check if species was found in the reference table, print it out if yes
-if species=="not found":
-	out_str="species not in table"
+# remove database file if toggle is set to 1, else print different statements
+if os.path.isfile(db_file):
+	# establishes connection to the database and creating an empty file if there is none
+	db_conn=sqlite3.connect(db_file)
+	# creates new cursor object to interact with the database
+	c=db_conn.cursor()
 else:
-	out_str=("Index "+index+" | "+species+" "+authority+" - "+taxgroup+" ("+habitats+")")
+	raise Exception('Database does not exist. Exiting.')
 
+# function for finding the Index for the current Accession Number
+def get_id(acc_number: str):
+	query="SELECT IDX FROM ids WHERE AccessionNumber = ?"
+	c.execute(query,(acc_number,))
+	idx=c.fetchone()
+	
+	if idx!=None:
+		return idx[0]
+	else:
+		return "not found"
+
+# function for getting taxonomic information from the database
+def get_taxonomy(idx: int):
+	query="SELECT ScientificName, Authority, taxGroup FROM taxonomy WHERE IDX = ?"
+	c.execute(query,(idx,))
+	tax_tuple=c.fetchone()
+	
+	return(tax_tuple)
+
+# function for getting the habitat information from the database
+def get_habitats(idx: int):
+	query="SELECT isMarine, isBrackish, isFresh, isTerrestrial FROM habitats WHERE IDX = ?"
+	
+	c.execute(query, (idx,))
+	habitat_boolean=c.fetchone()
+	
+	habitat_names = ["marine", "brackish", "freshwater", "terrestrial"]
+	habitat_list = [habitat_names[i] for i in range(len(habitat_boolean)) if habitat_boolean[i] == 1]
+	
+	if habitat_list!=[]:
+		habitat_str=', '.join(map(str,habitat_list))
+	else:
+		habitat_str="habitats unknown"
+	
+	return habitat_str
+
+idx=get_id(args.acc_number)
+
+# execute the functions if the genome was found in the database
+if idx!="not found":
+	tax_tuple=get_taxonomy(idx)
+	habitats=get_habitats(idx)
+	
+	out_str=(f"Index {idx} / {tax_tuple[0]} {tax_tuple[1]} - {tax_tuple[2]} ({habitats})")
+else:
+	out_str="genome not found in database"
+
+# print output to the console for further processing
 print(out_str)
+
+# close the connection to the database
+db_conn.close()

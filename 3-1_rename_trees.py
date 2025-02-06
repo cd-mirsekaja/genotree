@@ -4,56 +4,70 @@
 Created on Fri Apr 26 17:10:48 2024
 
 @author: Ronja Roesner
+
+Script for renaming the tips of phylogenetic trees with the corresponding index from the database
 """
 
-import re
-import argparse
-import pandas as pd # type: ignore
+import argparse, sqlite3, os, re
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-t', '--tree' , dest = 'tree_file' , type = str , default= None , required= True, help = 'input treefile')
-parser.add_argument('-x', '--table' , dest = 'overview_library' , type = str , default= None , required= True, help = 'input excel table')
+parser.add_argument('-d', '--database' , dest = 'library' , type = str , default= None , required= True, help = 'input sql database')
 args, unknown = parser.parse_known_args()
 
-# imports reference table as dataframe table
-table =  pd.read_excel(args.overview_library, header=0)
 locus_id = args.tree_file.split("-")[0]
+db_file=args.library
+
+# remove database file if toggle is set to 1, else print different statements
+if os.path.isfile(db_file):
+	# establishes connection to the database and creating an empty file if there is none
+	db_conn=sqlite3.connect(db_file)
+	# creates new cursor object to interact with the database
+	c=db_conn.cursor()
+else:
+	raise Exception('Database does not exist. Exiting.')
+
 
 # writes contents of input tree to variable treefile_content
 with open(args.tree_file, 'r') as file:
 	treefile_content = file.read()
 
+# set variables for counting and creating a list of genomes
 genome_count=0
 genome_list=[]
 
-# iterates through all rows in the table and replaces the accession numbers with the replacement_string
-for index, row in table.iterrows():
-	spec_id=row['Index']
-	accession_number=row['AccessionNumber']
+# query to get the index and accession number from the database
+query="SELECT IDX, AccessionNumber FROM ids"
+c.execute(query)
+# iterates over the rows of the query result to replace the accession number with the index
+for row in c:
+	idx,acc_number=row
+	replacement_str=f"{idx}"
 	
-	replacement_string = f"{spec_id}"
-	
-	if accession_number in treefile_content:
-		treefile_content = treefile_content.replace(accession_number, replacement_string)
-		genome_list.append(accession_number)
+	if acc_number in treefile_content:
+		treefile_content = treefile_content.replace(acc_number, replacement_str)
+		genome_list.append(acc_number)
 		genome_count=genome_count+1
-	
 
-species_string=str(genome_list)
+# converts the list of genomes to a string
+genome_string=str(genome_list)
 
-# replaces all unneccessary clutter with ":"
-treefile_content = re.sub(r'\|locus_E\d+-NoDups_OK\|[^:]+:', ':', treefile_content)
+# replaces all unneccessary clutter in the treefile with ":"
+treefile_content = re.sub(r'\|locus_E\d+-models\|[^:]+:', ':', treefile_content)
 
+# closes connection to the database
+db_conn.close()
 
 # writes treefile_content to new file
-tree_out = open(locus_id + "-" + str(genome_count) + "_genomes" + "-renamed" + ".treefile","w")
-tree_out.write(treefile_content)
-tree_out.close()
+with open(locus_id + "-" + str(genome_count) + "_genomes" + "-renamed" + ".treefile","w") as tree_out:
+	tree_out.write(treefile_content)
+	print("Renamed treefile saved to ",tree_out.name)
 
-genome_list_out = open("genome_list"+".log","a")
-genome_list_out.write('\n')
-genome_list_out.write(args.tree_file+": "+str(genome_count)+" genomes")
-genome_list_out.write('\n')
-genome_list_out.write(species_string)
-genome_list_out.close()
+with open("genome_list"+".log","a") as outfile:
+	outfile.write('\n')
+	outfile.write(args.tree_file+": "+str(genome_count)+" genomes")
+	outfile.write('\n')
+	outfile.write(genome_string)
+	
+	print("List of genomes saved to ",outfile.name)
 

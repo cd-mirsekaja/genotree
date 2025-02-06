@@ -28,7 +28,7 @@ for file in ~/master_input/all_hits_aligned_revised;do
     iqtree2 -s $file -T 6 --tbe --alrt 10000    
 
     # renames tree branches to simplify analysis
-    python3 ~/genotree/3-1_rename_trees.py -t $file.treefile -x ~/master_input/genome_master_library.xlsx
+    python3 ~/genotree/3-1_rename_trees.py -t $file.treefile -x ~/master_input/genotree_master_library.db
 
 done
 
