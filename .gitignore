@@ -6,6 +6,7 @@
 *.exe
 *.o
 *.so
+*.app
 
 # Packages #
 ############
@@ -22,6 +23,7 @@
 
 # Logs and databases #
 ######################
+*.db
 *.log
 *.sql
 *.sqlite
@@ -31,6 +33,7 @@
 .DS_Store
 .DS_Store?
 ._*
+/utilities/._*
 .Spotlight-V100
 .Trashes
 ehthumbs.db

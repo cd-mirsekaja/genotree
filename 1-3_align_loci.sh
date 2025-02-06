@@ -34,10 +34,14 @@ echo === aligning hits for $locus_id ===
 # runs mafft on all combined hits for this exon
 mafft --thread 6 --auto $locus_id-combined_hits.fasta > $locus_id-aligned.fasta
 
+echo === renaming file for further processing ===
+python3 ~/genotree/utilities/rename_script.py -f $locus_id-aligned.fasta
+
 echo === moving files ===
 # move all combined, tree and miscellaneous files to their respective subfolders
 mv $locus_id-aligned.fasta ./hits-aligned
 mv $locus_id-combined_hits.fasta ./hits-combined
+mv $locus_id-renamed.fasta ./hits-renamed
 
 # display end time in log file
 echo === end time for $locus_id is $(date '+%H:%M:%S') ===

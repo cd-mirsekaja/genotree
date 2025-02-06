@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-52:00
+#SBATCH --time=0-24:00
 #SBATCH --output=/user/rego3475/master_output/logs/1_make_alignment.%j.out
 #SBATCH --error=/user/rego3475/master_output/logs/1_make_alignment.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -21,26 +21,25 @@ module load Python/3.11.3-GCCcore-13.1.0
 #module load R/4.3.1-foss-2023a
 
 # make working directory and move into it
-mkdir $WORK/wd-$startdate
-cd $WORK/wd-$startdate
+mkdir $WORK/wd_make_al-$startdate
+cd $WORK/wd_make_al-$startdate
 
 # make output directories
-mkdir hits hits-aligned hits-combined hmm nhmmer-tables trash
+mkdir hits hits-aligned hits-combined hits-renamed hmm nhmmer-tables trash
 mkdir logs
 mkdir logs/automatic
-mkdir logs/manual
 
 # make log files
 touch logfile.log
 touch genome_list.log
 
 # when testing, use these - sets the amount of genomes and loci for checking
-#genomecount=10
-#locuscount=10
+genomecount=10
+locuscount=10
 
 # when running with full dataset, use these - sets genomes and exons to all files in respective folders
-genomecount=$(ls /nfs/data/zapp2497/genomes/raw_fasta/ | wc -l)
-locuscount=$(ls ~/master_input/locus-fa_1105_nucleotide/ | wc -l)
+#genomecount=$(ls /nfs/data/zapp2497/genomes/raw_fasta/ | wc -l)
+#locuscount=$(ls ~/master_input/locus-fa_1105_nucleotide/ | wc -l)
 
 # sets the amount of cpus that nhmmer should use
 cpu_count=8
@@ -50,7 +49,8 @@ echo Working Directory: $(pwd) >> logfile.log
 (echo  ;echo Starting at: $startdate) >> logfile.log
 
 # declares a variable genomic_files containing the names all genomes in the dataset
-genomic_files=$(ls /nfs/data/zapp2497/genomes/raw_fasta/| sort -R | head -n $genomecount)
+genomic_files=$(ls /nfs/data/zapp2497/genomes/raw_fasta/ | tail -n $genomecount | grep -v -x -f ~/master_input/forbidden_genomes.txt)
+echo ;echo genome files: $genomic_files;echo 
 
 # declares a variable locus_files containing the names of all exons in the dataset
 locus_files=$(ls ~/master_input/locus-fa_1105_nucleotide/ | head -n $locuscount)
@@ -105,12 +105,15 @@ while squeue -u $USER | grep -q "1-3"; do wait; done
 # add a list of all used genomes to the logfile
 (echo  ;echo $genomecount genomes: ) >> logfile.log
 for file in $genomic_files;do
+	#if grep -Fxq "$file" ~/master_input/forbidden_genomes.txt
+	#then continue
+	#fi
 	acc_number=$(echo "${file%%.fasta}")
-	acc_count=$(grep $acc_number genome_list.log | wc -l)	
-	(echo -n "$acc_number | ";echo -n $(python3 ~/genotree/utilities/speciesinfo.py -n "${file%%.fasta}" -x ~/master_input/genotree_master_library.db)) >> logfile.log
-
+	# add Accession Number to the genome list
+	echo $acc_number >> genome_list.log
+	# add genome information to the logfile
+	(echo -n "$acc_number | ";echo -n $(python3 ~/genotree/utilities/speciesinfo.py -n "${file%%.fasta}" -d ~/master_input/genotree_master_library.db);echo ) >> logfile.log
 done
-
 
 # add a list of all loci to the logfile
 (echo  ;echo $locuscount loci: )>> logfile.log
@@ -119,22 +122,22 @@ for file in $locus_files; do
 	(echo "$locus_id") >> logfile.log
 done
 
-
-
 enddate=$(date '+%Y_%m_%d-%H_%M_%S')
 
 echo === moving files ===
 # make folder for all outputs of this run
-mkdir ~/master_output/raw_alignments/$enddate-all_out_FULL-DATASET
+mkdir ~/master_output/raw_alignments/$enddate-all_out_test10
 
 # add the ending time to the logfile and move all log files
 (echo  ;echo Ending at: $enddate) >> logfile.log
-mv logfile.log logs/manual/logfile_$enddate.log
+mv logfile.log  logs/logfile_$enddate.log
+mv genome_list.log logs/genomelist_$enddate.log
 
 # move all output folders
-mv * ~/master_output/raw_alignments/$enddate-all_out_FULL-DATASET
+mv * ~/master_output/raw_alignments/$enddate-all_out_test10
 
+# remove the working directory
 cd ~/genotree/
-rm -r $WORK/wd-$startdate
+rm -r $WORK/wd_make_al-$startdate
 
 echo === end date and time is $enddate ===

@@ -69,7 +69,7 @@ if idx!="not found":
 	tax_tuple=get_taxonomy(idx)
 	habitats=get_habitats(idx)
 	
-	out_str=(f"Index {idx} / {tax_tuple[0]} {tax_tuple[1]} - {tax_tuple[2]} ({habitats})")
+	out_str=(f"Index {idx} / {tax_tuple[0]} {tax_tuple[1]} - {tax_tuple[2]} ({habitats})\n")
 else:
 	out_str="genome not found in database"
 

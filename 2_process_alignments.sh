@@ -18,17 +18,18 @@ module load hpc-env/13.1
 module load parallel/20230822-GCCcore-13.1.0
 module load Python/3.11.3-GCCcore-13.1.0
 
+# make working directory and move into it
 mkdir $WORK/wd-al_scoring-$startdate
 cd $WORK/wd-al_scoring-$startdate
 
-mkdir logs
-mkdir aligroove_output alignments_filtered filter_tables
+# make output directories
+mkdir logs aligroove_output alignments_filtered filter_tables
 mkdir aligroove_output/txt aligroove_output/svg 
 
-# low amount of files, use for testing
+# get a low amount of files, use for testing
 #alignment_count=5
 
-# all files, use for full dataset
+# get all files, use for full dataset
 alignment_count=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | wc -l)
 
 # save all relevant alignment files in a variable
@@ -80,15 +81,16 @@ for file in $alignment_files; do
     python3 ~/genotree/2-2_filter_alignments.py -d $aligroove_matrix -a $file -l $locus_id -t $threshold
 done
 
+# move filtered alignments and filter tables to output folder
 echo === moving files ===
-
 mv *-filtered.fasta ./alignments_filtered
 mv *-values.csv ./filter_tables
 
-
+# get the end time and move all files to the output folder
 enddate=$(date '+%Y_%m_%d-%H_%M_%S')
-mkdir ~/master_output/refined_alignments/$enddate-alignments_FULL-DATASET
-mv * ~/master_output/refined_alignments/$enddate-alignments_FULL-DATASET
+mkdir ~/master_output/filtered_alignments/$enddate-alignments_FULL-DATASET
+mv * ~/master_output/filtered_alignments/$enddate-alignments_FULL-DATASET
 
+# remove the working directory
 cd ~/genotree
-#rm -r $WORK/wd-al_scoring-$startdate
+rm -r $WORK/wd-al_scoring-$startdate

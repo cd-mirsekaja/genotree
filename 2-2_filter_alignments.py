@@ -20,7 +20,6 @@ parser.add_argument('-l', '--locus_id', dest='locus_id' , type=str, default=None
 parser.add_argument('-t', '--threshold', dest='threshold', type=float, default=0.2, required=False, help='threshold value (default: 0.2)')
 args, unknown = parser.parse_known_args()
 
-
 # import matrix with the total mean and median scores for all loci
 #total_score_matrix = pd.read_csv(f"{args.dir_scores}/total_scores.csv",sep=";")
 

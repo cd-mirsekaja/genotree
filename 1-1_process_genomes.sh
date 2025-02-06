@@ -19,13 +19,13 @@ module load Biopython/1.81-foss-2023a
 genome="$1"
 cpu_count=$(expr "$2"+0)
 
-# extract the accession number from the file name
-species_id=$(echo "${genome%%.fasta}")
-
 # terminates the script if the accession number is on the forbidden list
-if grep -Fxq "$species_id" ~/master_input/forbidden_accnumbers.txt
+if grep -Fxq "$genome" ~/master_input/forbidden_genomes.txt
 then exit 0
 fi
+
+# extract the accession number from the file name
+species_id=$(echo "${genome%%.fasta}")
 
 # display start time in log file
 echo === start time for $species_id is $(date '+%H:%M:%S') ===

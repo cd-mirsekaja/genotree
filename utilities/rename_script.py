@@ -2,7 +2,7 @@ import re
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-f', '--file' , dest = 'file' , type = str , default= None , required= True, help = 'input treefile')
+parser.add_argument('-f', '--file' , dest = 'file' , type = str , default= None , required= True, help = 'input file')
 args, unknown = parser.parse_known_args()
 
 locus_id = args.file.split("-")[0]
