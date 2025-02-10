@@ -2,10 +2,11 @@ import re
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-f', '--file' , dest = 'file' , type = str , default= None , required= True, help = 'input file')
+parser.add_argument('-f', '--file' , dest = 'file' , type = str , default = None , required = True, help = 'input file')
+parser.add_argument('-d', '--directory', dest = 'out_dir', type = str, default = None, required = True, help = 'output directory')
 args, unknown = parser.parse_known_args()
 
-locus_id = args.file.split("-")[0]
+locus_id = args.file.split("-")[0] if not '/' in args.file else args.file.split("/")[-1].split("-")[0]
 ending = args.file.split(".")[-1]
 
 
@@ -15,7 +16,7 @@ with open(args.file, 'r') as file:
 # the following function was written with the help of ChatGPT
 def transform_content(file_content):
     # Define the regex pattern for the transformation
-    pattern = r"(GC[A-Za-z0-9_]+\.\d+)\|[^|]+\|([A-Za-z0-9_.]+)\|(\d+)\|(\d+)"
+    pattern = r"([A-Za-z0-9_]+\.\d+)\|[^|]+\|([A-Za-z0-9_.]+)\|(\d+)\|(\d+)"
     replacement = r"\1-\2-\3-\4"  # Replacement pattern using captured groups
 
     # Apply re.sub to replace all occurrences in the file content
@@ -30,6 +31,5 @@ elif ending=="treefile":
 else:
     raise TypeError("file type not recognized")
 
-file_out = open(locus_id+"-renamed." + ending,"w")
-file_out.write(file_content)
-file_out.close()
+with open(args.out_dir+'/'+locus_id+"-renamed." + ending,"w") as file_out:
+    file_out.write(file_content)

@@ -19,7 +19,7 @@ db_file=args.library
 
 # remove database file if toggle is set to 1, else print different statements
 if os.path.isfile(db_file):
-	# establishes connection to the database and creating an empty file if there is none
+	# establishes connection to the database
 	db_conn=sqlite3.connect(db_file)
 	# creates new cursor object to interact with the database
 	c=db_conn.cursor()

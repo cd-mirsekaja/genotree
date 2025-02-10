@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=10
 #SBATCH --mem=80G
-#SBATCH --time=0-32:00
+#SBATCH --time=0-40:00
 #SBATCH --output=./logs/automatic/1-1_process_genomes.%j.out
 #SBATCH --error=./logs/automatic/1-1_process_genomes.%j.err
 #SBATCH --mail-type=FAIL

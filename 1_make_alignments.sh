@@ -105,9 +105,6 @@ while squeue -u $USER | grep -q "1-3"; do wait; done
 # add a list of all used genomes to the logfile
 (echo  ;echo $genomecount genomes: ) >> logfile.log
 for file in $genomic_files;do
-	#if grep -Fxq "$file" ~/master_input/forbidden_genomes.txt
-	#then continue
-	#fi
 	acc_number=$(echo "${file%%.fasta}")
 	# add Accession Number to the genome list
 	echo $acc_number >> genome_list.log
@@ -126,7 +123,7 @@ enddate=$(date '+%Y_%m_%d-%H_%M_%S')
 
 echo === moving files ===
 # make folder for all outputs of this run
-mkdir ~/master_output/raw_alignments/$enddate-all_FULL_DATASET_NEW
+mkdir ~/master_output/raw_alignments/$enddate-all_out_FULL_DATASET_NEW
 
 # add the ending time to the logfile and move all log files
 (echo  ;echo Ending at: $enddate) >> logfile.log
@@ -138,6 +135,6 @@ mv * ~/master_output/raw_alignments/$enddate-all_out_FULL_DATASET_NEW
 
 # remove the working directory
 cd ~/genotree/
-rm -r $WORK/wd_make_al-$startdate
+#rm -r $WORK/wd_make_al-$startdate
 
 echo === end date and time is $enddate ===

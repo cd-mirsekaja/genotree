@@ -49,7 +49,9 @@ export -f scoring_function
 echo "$alignment_files" | parallel --eta --jobs $alignment_count scoring_function
 
 # waits for all alignments to be rated by checking the squeue command for a certain term
-while squeue -u $USER | grep -q "2-1"; do sleep 1; wait; done
+while squeue -u $USER | grep -q "2-1_rate"; do wait; done
+
+squeue -u $USER
 
 echo === finished alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 
