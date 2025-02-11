@@ -7,7 +7,7 @@
 #SBATCH --output=/user/rego3475/master_output/logs/1_make_alignment.%j.out
 #SBATCH --error=/user/rego3475/master_output/logs/1_make_alignment.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=ronja.roesner@uol.de,simon.kaefer@uol.de
+#SBATCH --mail-user=ronja.roesner@uol.de
 
 # get the starting time
 startdate=$(date '+%Y_%m_%d-%H_%M_%S')
