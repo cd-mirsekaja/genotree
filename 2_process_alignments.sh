@@ -9,7 +9,8 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
-# get the starting time
+# get the starting time and set an attachment for folder names
+attachment="ONLY-ALLOWED"
 startdate=$(date '+%Y_%m_%d-%H_%M_%S')
 echo === start date and time is $startdate ===
 
@@ -19,8 +20,8 @@ module load parallel/20230822-GCCcore-13.1.0
 module load Python/3.11.3-GCCcore-13.1.0
 
 # make working directory and move into it
-mkdir $WORK/wd-al_scoring-$startdate
-cd $WORK/wd-al_scoring-$startdate
+mkdir $WORK/wd-al_scoring-$startdate-$attachment
+cd $WORK/wd-al_scoring-$startdate-$attachment
 
 # make output directories
 mkdir logs aligroove_output alignments_filtered filter_tables
@@ -98,9 +99,9 @@ mv *-values.csv ./filter_tables
 
 # get the end time and move all files to the output folder
 enddate=$(date '+%Y_%m_%d-%H_%M_%S')
-mkdir ~/master_output/filtered_alignments/$enddate-alignments_ONLY-ALLOWED
-mv * ~/master_output/filtered_alignments/$enddate-alignments_ONLY-ALLOWED
+mkdir ~/master_output/filtered_alignments/$enddate-alignments_$attachment
+mv * ~/master_output/filtered_alignments/$enddate-alignments_$attachment
 
 # remove the working directory
 cd ~/genotree
-#rm -r $WORK/wd-al_scoring-$startdate
+#rm -r $WORK/wd-al_scoring-$startdate-$attachment
