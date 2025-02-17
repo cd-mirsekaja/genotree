@@ -40,11 +40,15 @@ mv *-renamed.treefile ./treefiles-renamed
 mv *.fasta.* ./trash
 
 # make a combined tree out of individual gene trees and run astral on it (program installed locally)
-echo === combining all gene trees and running astral at $(date '+%d.%m.%Y %H:%M:%S') ===
+echo === combining all gene trees and running ASTRAL at $(date '+%d.%m.%Y %H:%M:%S') ===
 cat treefiles-renamed/*.treefile > treefiles-final/all-loci_combined.treefile
 ~/programs/ASTER-Linux/bin/astral-pro3 -t 8 -o treefiles-final/all-loci_astralpro3.treefile treefiles-final/all-loci_combined.treefile 2>astralpro3.log
 ~/programs/ASTER-Linux/bin/astral4 -t 8 -o treefiles-final/all-loci_astral4.treefile treefiles-final/all-loci_combined.treefile 2>astral4.log
+~/programs/ASTER-Linux/bin/wastral -t 8 -o treefiles-final/all-loci_wastral.treefile treefiles-final/all-loci_combined.treefile 2>wastral.log
+~/programs/ASTER-Linux/bin/caster-site -t 8 -o treefiles-final/all-loci_castersite.treefile treefiles-final/all-loci_combined.treefile 2>castersite.log
+~/programs/ASTER-Linux/bin/caster-pair -t 8 -o treefiles-final/all-loci_casterpair.treefile treefiles-final/all-loci_combined.treefile 2>casterpair.log
 
+echo === finished ASTRAL. Moving files at $(date '+%d.%m.%Y %H:%M:%S') ===
 # move log files to subfolder
 mv astralpro3.log logs/automatic/astral3pro_$enddate.log
 mv astral4.log logs/automatic/astral4_$enddate.log
