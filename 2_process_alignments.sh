@@ -37,12 +37,13 @@ alignment_count=$(cat master_input/allowed_loci.txt | wc -w)
 #alignment_count=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | wc -l)
 
 # save all relevant alignment files with only allowed loci in a variable
-alignment_files=$(find ~/master_input/all_hits_aligned_renamed/*-renamed.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head -n $alignment_count)
+alignment_files=$(find ~/master_input/all_hits_aligned_renamed/*-renamed.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head)
 
 # save all relevant alignment files in a variable
 #alignment_files=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | head -n $alignment_count)
 
-echo == used alignment files: $alignment_files ==
+echo == used $alignment_count alignment files: $alignment_files ==
+find ~/master_input/all_hits_aligned_renamed/*-renamed.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head
 
 echo === starting alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for scoring each alignment
