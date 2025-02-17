@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-50:00
+#SBATCH --time=0-96:00
 #SBATCH --output=/user/rego3475/master_output/logs/2_process_alignments.%j.out
 #SBATCH --error=/user/rego3475/master_output/logs/2_process_alignments.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -29,11 +29,19 @@ mkdir aligroove_output/txt aligroove_output/svg
 # get a low amount of files, use for testing
 #alignment_count=5
 
+# get only allowed files, use for filtered dataset
+alignment_count=$(cat master_input/allowed_loci.txt | wc -w)
+
 # get all files, use for full dataset
-alignment_count=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | wc -l)
+#alignment_count=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | wc -l)
+
+# save all relevant alignment files with only allowed loci in a variable
+alignment_files=$(find ~/master_input/all_hits_aligned_renamed/*-renamed.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head -n $alignment_count)
 
 # save all relevant alignment files in a variable
-alignment_files=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | head -n $alignment_count)
+#alignment_files=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | head -n $alignment_count)
+
+echo == used alignment files: $alignment_files ==
 
 echo === starting alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for scoring each alignment
@@ -90,9 +98,9 @@ mv *-values.csv ./filter_tables
 
 # get the end time and move all files to the output folder
 enddate=$(date '+%Y_%m_%d-%H_%M_%S')
-mkdir ~/master_output/filtered_alignments/$enddate-alignments_FULL-DATASET
-mv * ~/master_output/filtered_alignments/$enddate-alignments_FULL-DATASET
+mkdir ~/master_output/filtered_alignments/$enddate-alignments_ONLY-ALLOWED
+mv * ~/master_output/filtered_alignments/$enddate-alignments_ONLY-ALLOWED
 
 # remove the working directory
 cd ~/genotree
-rm -r $WORK/wd-al_scoring-$startdate
+#rm -r $WORK/wd-al_scoring-$startdate
