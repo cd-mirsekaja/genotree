@@ -52,6 +52,9 @@ echo === finished ASTRAL. Moving files at $(date '+%d.%m.%Y %H:%M:%S') ===
 # move log files to subfolder
 mv astralpro3.log logs/automatic/astral3pro_$enddate.log
 mv astral4.log logs/automatic/astral4_$enddate.log
+mv wastral.log logs/automatic/wastral_$enddate.log
+mv castersite.log logs/automatic/castersite_$enddate.log
+mv casterpair.log logs/automatic/casterpair_$enddate.log
 mv genome_list.log logs/genomelist_$enddate.log
 
 # get the end time and move all files to the output folder
