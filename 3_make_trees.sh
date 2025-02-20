@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-32:00
+#SBATCH --time=0-8:00
 #SBATCH --output=/user/rego3475/master_output/logs/3_make_trees.%j.out
 #SBATCH --error=/user/rego3475/master_output/logs/3_make_trees.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -28,7 +28,7 @@ mkdir treefiles-original treefiles-renamed treefiles-final logs trash
 mkdir logs/automatic
 
 # set alignment file path and create genome list logfile
-alignment_path=~/master_input/all_hits_aligned_filtered/0_35
+alignment_path=~/master_input/all_hits_aligned_filtered/0_2
 touch genome_list.log
 
 # set variable with alignment files
@@ -66,6 +66,9 @@ cat treefiles-renamed/*.treefile > treefiles-final/all-loci_combined.treefile
 ~/programs/ASTER-Linux/bin/caster-site -t 8 -o treefiles-final/all-loci_castersite.treefile treefiles-final/all-loci_combined.treefile 2>castersite.log
 ~/programs/ASTER-Linux/bin/caster-pair -t 8 -o treefiles-final/all-loci_casterpair.treefile treefiles-final/all-loci_combined.treefile 2>casterpair.log
 
+# get the end time
+enddate=$(date '+%Y_%m_%d-%H_%M_%S')
+
 echo === finished ASTRAL. Moving files at $(date '+%d.%m.%Y %H:%M:%S') ===
 # move log files to subfolder
 mv astralpro3.log logs/automatic/astral3pro_$enddate.log
@@ -75,8 +78,7 @@ mv castersite.log logs/automatic/castersite_$enddate.log
 mv casterpair.log logs/automatic/casterpair_$enddate.log
 mv genome_list.log logs/genomelist_$enddate.log
 
-# get the end time and move all files to the output folder
-enddate=$(date '+%Y_%m_%d-%H_%M_%S')
+# move all files to the output folder
 mkdir ~/master_output/phylo_trees/$enddate-trees
 mv * ~/master_output/phylo_trees/$enddate-trees
 
