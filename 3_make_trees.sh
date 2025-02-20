@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-24:00
+#SBATCH --time=0-32:00
 #SBATCH --output=/user/rego3475/master_output/logs/3_make_trees.%j.out
 #SBATCH --error=/user/rego3475/master_output/logs/3_make_trees.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -27,14 +27,18 @@ cd $WORK/wd-tree_generation-$startdate
 mkdir treefiles-original treefiles-renamed treefiles-final logs trash
 mkdir logs/automatic
 
+# set alignment file path and create genome list logfile
 alignment_path=~/master_input/all_hits_aligned_filtered/0_35
+touch genome_list.log
 
+# set variable with alignment files
 alignment_files=$(ls $alignment_path/*.fasta)
 alignment_count=$(echo $filtered_alignments | wc -w)
 
 # makes a phylotree for each alignment and renames it to be better readable
 echo === generating individual gene trees at $(date '+%d.%m.%Y %H:%M:%S') ===
 
+# create function for making the gene trees
 generate_tree(){
     locus_id=$(echo "${1##*/}" | cut -d'-' -f1)
     echo === generating tree for $locus_id ===
@@ -52,6 +56,9 @@ while squeue -u $USER | grep -q "3-1_make"; do wait; done
 mv $alignment_path/*.fasta.treefile ./treefiles-original
 mv $alignment_path/*-renamed.treefile ./treefiles-renamed
 mv $alignment_path/*.fasta.* ./trash
+mv *.fasta.treefile ./treefiles-original
+mv *-renamed.treefile ./treefiles-renamed
+mv *.fasta.* ./trash
 
 # make a combined tree out of individual gene trees and run astral on it (program installed locally)
 echo === combining all gene trees and running ASTRAL at $(date '+%d.%m.%Y %H:%M:%S') ===
