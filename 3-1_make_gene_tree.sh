@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#SBATCH --partition rosa.p
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=60G
+#SBATCH --time=0-12:00
+#SBATCH --output=/user/rego3475/master_output/logs/3_make_trees.%j.out
+#SBATCH --error=/user/rego3475/master_output/logs/3_make_trees.%j.err
+#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --mail-user=ronja.roesner@uol.de
+
+# load necessary modules
+module load hpc-env/13.1
+module load Python/3.11.3-GCCcore-13.1.0
+module load IQ-TREE/2.2.2.7-gompi-2023a
+
+alignment_file=${1}
+
+# creates a tree for this aligned hitfile
+iqtree2 -s $alignment_file -T 8 --tbe --alrt 10000    
+
+# renames tree branches to simplify analysis
+python3 ~/genotree/3-2_rename_trees.py -t $alignment_file.treefile -d ~/master_input/genotree_master_library.db

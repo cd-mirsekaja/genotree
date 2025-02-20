@@ -53,7 +53,7 @@ for row in c:
 genome_string=str(genome_list)
 
 # replaces all unneccessary clutter in the treefile with ":"
-treefile_content = re.sub(r'\|locus_E\d+-models\|[^:]+:', ':', treefile_content)
+treefile_content = re.sub(r'-[A-Z0-9_]+\.?[0-9]*-\d+-\d+:', ':', treefile_content)
 
 # closes connection to the database
 db_conn.close()
