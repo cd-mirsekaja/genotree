@@ -4,9 +4,9 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
 #SBATCH --time=0-16:00
-#SBATCH --output=/user/rego3475/master_output/logs/3_make_trees.%j.out
-#SBATCH --error=/user/rego3475/master_output/logs/3_make_trees.%j.err
-#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --output=./logs/3-1_make_gene_tree.%j.out
+#SBATCH --error=./logs/3-1_make_gene_tree.%j.err
+#SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
 # load necessary modules
