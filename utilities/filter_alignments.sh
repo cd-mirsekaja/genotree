@@ -11,3 +11,5 @@ for file in alignment_files; do
     # filters alignments for current locus for all exons with a score under the given threshold
     python3 ~/genotree/2-2_filter_alignments.py -d $aligroove_matrix -a $file -l $locus_id -t $threshold
 done
+
+mv *-filtered.fasta ~/master_input/all_alignments_filtered

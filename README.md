@@ -53,6 +53,8 @@ The pipeline consists of multiple scripts working together. Input files and fold
 
 [total_score.py](utilities/total_score.py) - calculates total mean and median scores for supplied AliGROOVE matrices
 
+[filter_alignments.sh](utilites/filter_alignments.sh) - runs 2-2_filter_alignments.py for all given alignment files
+
 [rename_taxa.sh](utilities/rename_taxa.sh) - calls rename_script.sh for all supplied .fasta-files
 
 [rename_script.py](utilities/rename_script.py) - renames genes in supplied .fasta file for processing with AliGROOVE
