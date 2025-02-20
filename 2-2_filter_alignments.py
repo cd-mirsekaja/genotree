@@ -20,9 +20,6 @@ parser.add_argument('-l', '--locus_id', dest='locus_id' , type=str, default=None
 parser.add_argument('-t', '--threshold', dest='threshold', type=float, default=0.2, required=False, help='threshold value (default: 0.2)')
 args, unknown = parser.parse_known_args()
 
-# import matrix with the total mean and median scores for all loci
-#total_score_matrix = pd.read_csv(f"{args.dir_scores}/total_scores.csv",sep=";")
-
 # import matrix with all values for this locus from file
 score_matrix = pd.read_csv(args.input_table,sep="\t",index_col=0)
 # create filtered matrix with only values lower than or equal to the threshold
@@ -45,7 +42,7 @@ with open(f"{args.locus_id}_{args.threshold}-values"+".csv","w") as file:
 	print(f"Low values saved as {file.name}")
 
 
-with open(args.input_alignment) as alignment_content, open(f"{args.locus_id}_{args.threshold}-filtered.fasta", "w") as new_alignment:
+with open(args.input_alignment) as alignment_content, open(f"{args.locus_id}-{args.threshold}-filtered.fasta", "w") as new_alignment:
 	write_flag = True  # Determines whether to write lines to output
 	for line in alignment_content:
 		if line.startswith(">"):  # If it's a headline

@@ -105,4 +105,4 @@ mv * ~/master_output/filtered_alignments/$enddate-alignments_$attachment
 
 # remove the working directory
 cd ~/genotree
-#rm -r $WORK/wd-al_scoring-$startdate-$attachment
+rm -r $WORK/wd-al_scoring-$startdate-$attachment

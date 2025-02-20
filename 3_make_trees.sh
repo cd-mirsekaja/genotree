@@ -3,11 +3,16 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-10:00
+#SBATCH --time=0-24:00
 #SBATCH --output=/user/rego3475/master_output/logs/3_make_trees.%j.out
 #SBATCH --error=/user/rego3475/master_output/logs/3_make_trees.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
+
+# load necessary modules
+module load hpc-env/13.1
+module load Python/3.11.3-GCCcore-13.1.0
+module load IQ-TREE/2.2.2.7-gompi-2023a
 
 # get the starting time
 startdate=$(date '+%Y_%m_%d-%H_%M_%S')
@@ -23,7 +28,7 @@ mkdir logs/automatic
 
 # makes a phylotree for each alignment and renames it to be better readable
 echo === generating individual gene trees at $(date '+%d.%m.%Y %H:%M:%S') ===
-for file in ~/master_input/all_hits_aligned_filtered;do
+for file in ~/master_input/all_hits_aligned_filtered/0_35;do
     locus_id=$(echo "${file##*/}" | cut -d'-' -f1)
     echo === generating tree for $locus_id ===
     # creates a tree for this aligned hitfile
