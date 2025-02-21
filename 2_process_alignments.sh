@@ -31,16 +31,16 @@ mkdir aligroove_output/txt aligroove_output/svg
 #alignment_count=5
 
 # get only allowed files, use for filtered dataset
-alignment_count=$(cat master_input/allowed_loci.txt | wc -w)
+#alignment_count=$(cat master_input/allowed_loci.txt | wc -w)
 
 # get all files, use for full dataset
-#alignment_count=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | wc -l)
+alignment_count=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | wc -l)
 
 # save all relevant alignment files with only allowed loci in a variable
-alignment_files=$(find ~/master_input/all_hits_aligned_renamed/*-renamed.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head)
+#alignment_files=$(find ~/master_input/all_hits_aligned_renamed/*-renamed.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head)
 
 # save all relevant alignment files in a variable
-#alignment_files=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | head -n $alignment_count)
+alignment_files=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | head -n $alignment_count)
 
 echo == used $alignment_count alignment files: $alignment_files ==
 find ~/master_input/all_hits_aligned_renamed/*-renamed.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head
@@ -82,7 +82,7 @@ done
 mv total_scores.csv ./aligroove_output
 
 # set filter threshold
-threshold=0.35
+threshold=0.5
 echo === filtering alignments for score threshold $threshold ===
 for file in $alignment_files; do
     # get ID for current locus

@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-2:30
+#SBATCH --time=0-5:00
 #SBATCH --output=./logs/3-1_make_gene_tree.%j.out
 #SBATCH --error=./logs/3-1_make_gene_tree.%j.err
 #SBATCH --mail-type=FAIL

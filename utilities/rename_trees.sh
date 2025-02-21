@@ -1,4 +1,5 @@
 tree_dir=${1}
+savemod=${2}
 
 cd /dss/work/rego3475/wd_test
 
