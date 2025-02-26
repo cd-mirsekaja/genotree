@@ -24,7 +24,7 @@ mkdir $WORK/wd-al_scoring-$startdate-$attachment
 cd $WORK/wd-al_scoring-$startdate-$attachment
 
 # make output directories
-mkdir logs aligroove_output alignments_filtered filter_tables
+mkdir logs aligroove_output alignments_filtered filter_tables alignments_filtered_realigned
 mkdir aligroove_output/txt aligroove_output/svg 
 
 # get a low amount of files, use for testing
@@ -88,7 +88,7 @@ for file in $alignment_files; do
     # get ID for current locus
     locus_id=$(echo "${file##*/}" | cut -d'-' -f1)
     aligroove_matrix=./aligroove_output/txt/AliGROOVE_seqsim_matrix_$locus_id-renamed.txt
-    echo Locus ID: $locus_id
+    echo filtering locus ID: $locus_id
     # filters alignments for current locus for all exons with a score under the given threshold
     python3 ~/genotree/2-2_filter_alignments.py -d $aligroove_matrix -a $file -l $locus_id -t $threshold
 done
@@ -97,6 +97,17 @@ done
 echo === moving files ===
 mv *-filtered.fasta ./alignments_filtered
 mv *-values.csv ./filter_tables
+
+filtered_files=$(ls alignments_filtered/*-filtered.fasta)
+
+for file in $filtered_files; do
+    locus_id=$(echo "${file##*/}" | cut -d'-' -f1)
+    echo re-aligning $locus_id
+    mafft --thread 6 --auto $file > $locus_id-filtered-realigned.fasta
+done
+
+mv *-filtered-realigned.fasta alignments_filtered_realigned
+
 
 # get the end time and move all files to the output folder
 enddate=$(date '+%Y_%m_%d-%H_%M_%S')

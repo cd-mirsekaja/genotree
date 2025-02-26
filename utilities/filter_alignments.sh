@@ -1,14 +1,34 @@
+#!/bin/bash
+
+#SBATCH --partition rosa.p
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=40G
+#SBATCH --time=0-4:00
+#SBATCH --output=/user/rego3475/master_output/logs/utility-filter_alignments.%j.out
+#SBATCH --error=/user/rego3475/master_output/logs/utility-filter_alignments.%j.err
+#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --mail-user=ronja.roesner@uol.de
+
+
+threshold=${1}
+
 # load necessary modules
 module load hpc-env/13.1
 module load parallel/20230822-GCCcore-13.1.0
 module load Python/3.11.3-GCCcore-13.1.0
+module load MAFFT/7.505-GCC-13.1.0-with-extensions
 
 
-threshold=0.2
+startdate=$(date '+%Y_%m_%d-%H_%M_%S')
+mkdir /dss/work/rego3475/wd_filter-realign_$startdate_$threshold
+cd /dss/work/rego3475/wd_filter-realign_$startdate_$threshold
+
+mkdir filtered_fasta filtered_realigned_fasta filter_tables
+
+echo === Filtering alignments with threshold $threshold ===
 
 aligroove_files=$(find ~/master_input/AliGROOVE_Matrices/*matrix.txt -type f -printf "%f\n" | grep -v -x -f ~/master_input/forbidden_loci.txt)
 aligroove_count=$(echo $aligroove_files | wc -w)
-
 
 filter_function(){
     aligroove_matrix=${1}
@@ -22,8 +42,30 @@ filter_function(){
     python3 ~/genotree/2-2_filter_alignments.py -d ~/master_input/AliGROOVE_Matrices/$aligroove_matrix -a $alignment_file -l $locus_id -t $threshold
 }
 
+# export the function so it can be used in the script
 export -f filter_function
 
+# filter every alignment file in the list
 for aligroove_matrix in $aligroove_files; do
     filter_function $aligroove_matrix
 done
+
+# move filtered alignments and value tables to subfolder
+mv *-filtered.fasta filtered_fasta
+mv *-values.csv filter_tables
+
+# set variable with a list of all filtered fasta files
+filtered_files=$(ls filtered_fasta/*-filtered.fasta)
+
+# re-align every filtered fasta file
+for file in $filtered_files; do
+    locus_id=$(echo "${file##*/}" | cut -d'-' -f1)
+    echo re-aligning $locus_id
+    mafft --thread 8 --auto $file > $locus_id-filtered-realigned.fasta
+done
+
+# move re-aligned fasta files to subdirectory
+mv *-filtered-realigned.fasta filtered_realigned_fasta
+
+cd ~/genotree
+#rm -r /dss/work/rego3475/wd_filter-realign_$startdate_$threshold

@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-10:00
+#SBATCH --time=0-24:00
 #SBATCH --output=/user/rego3475/master_output/logs/3_make_trees.%j.out
 #SBATCH --error=/user/rego3475/master_output/logs/3_make_trees.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -28,7 +28,7 @@ mkdir treefiles-original treefiles-renamed treefiles-final logs trash
 mkdir logs/automatic
 
 # set alignment file path and create genome list logfile
-alignment_path=~/master_input/all_hits_aligned_renamed
+alignment_path=~/master_input/all_hits_aligned_filtered/0_35_aligned
 touch genome_list.log
 
 # set variable with alignment files
@@ -37,6 +37,7 @@ alignment_count=$(echo $filtered_alignments | wc -w)
 
 # makes a phylotree for each alignment and renames it to be better readable
 echo === generating individual gene trees at $(date '+%d.%m.%Y %H:%M:%S') ===
+echo source for multiple sequence alignments $alignment_path
 
 # create function for making the gene trees
 generate_tree(){
