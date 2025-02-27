@@ -1,20 +1,30 @@
 
+# function for rerooting a phylotree object
+reroot_tree <- function(phylotree, outgroup = "none")
+{
+  # if no outgroup is specified, return unrooted tree
+  if (outgroup == "none")
+  { 
+    print("No outgroup supplied, returning unrooted tree...")
+    return(phylotree)
+  } else {
+    # get the node for the outgroup for rerooting.
+    reroot_node <- ggtree::MRCA(phylotree, .node1 = outgroup)
+    # reroot at specified node in the tree
+    rerooted_tree <- ape::root(phylotree, reroot_node)
+    print("Reroot successfull, returning new tree...")
+    return(rerooted_tree)
+  }
+}
+
 # function for importing the specified tree and rerooting it
 import_tree <- function(path, outgroup = "none")
 {
   # import treefile
   tree <- read.tree(path)
   # if no outgroup is specified, return unrooted tree
-  if (outgroup == "none")
-    {return(tree)}
-  else
-    {
-    # get the node for the outgroup for rerooting.
-    reroot_node <- ggtree::MRCA(tree, .node1 = outgroup)
-    # reroot at specified node in the tree
-    rerooted_tree <- ape::root(tree, reroot_node)
-    return(rerooted_tree)
-    }
+  out_tree <- reroot_tree(tree,outgroup)
+  return(out_tree)
 }
 
 # function for making a reference plot and saving it as a file
@@ -89,10 +99,10 @@ get_mrca <- function(taxgroup, tree, taxgroup_type) {
 }
 
 # function for annotating the plot with colours
-apply_annotation <- function(anno_plot, lb, cl, fill = "none", cl_type="taxGroup")
+apply_annotation <- function(anno_plot, phylotree, lb, cl, fill = "none", cl_type="taxGroup")
 {
   # search for most recent common ancestors of given taxon group
-  node_vector <- get_mrca(lb, rerooted_tree, cl_type)
+  node_vector <- get_mrca(lb, phylotree, cl_type)
   # if the taxon group is not in the tree, return unmodified plot
   if (node_vector[1] == "not in tree" || length(node_vector) == 0)
   {return(anno_plot)}
@@ -101,7 +111,7 @@ apply_annotation <- function(anno_plot, lb, cl, fill = "none", cl_type="taxGroup
   for (nd in node_vector)
   {
     # set the label for the given clade
-    anno_plot <- anno_plot + geom_cladelabel(node = nd, label = lb, color = cl, offset = .15,align = TRUE)
+    anno_plot <- anno_plot + geom_cladelabel(node = nd, label = lb, color = cl, offset = .1,align = TRUE)
     
     # highlight nodes with specified parameters
     if (fill == "full")
@@ -117,7 +127,7 @@ apply_annotation <- function(anno_plot, lb, cl, fill = "none", cl_type="taxGroup
 }
 
 # function for annotating a ggtree phylo plot with colors and taxon group names
-annotate_by_taxgroup <- function(taxgroup, phyloplot, path="", fill="full", colorscheme="monochrome", col_vec=c(), include=c(), export=TRUE)
+annotate_by_taxgroup <- function(taxgroup, phyloplot, phylotree, path="", fill="full", colorscheme="monochrome", col_vec=c(), include=c(), wd=30, ht=75, export=TRUE)
 {
   tax_anno_plot <- phyloplot
   color_count <- length(unique(data_matrix[[taxgroup]]))
@@ -144,11 +154,11 @@ annotate_by_taxgroup <- function(taxgroup, phyloplot, path="", fill="full", colo
     print(paste(entry,anno_colors[index],sep=": "))
     
     if (length(include)==0)
-    { tax_anno_plot <- apply_annotation(tax_anno_plot,entry,anno_colors[index],fill=fill,cl_type=taxgroup) }
+    { tax_anno_plot <- apply_annotation(tax_anno_plot,phylotree,entry,anno_colors[index],fill=fill,cl_type=taxgroup) }
     else if (length(include)>0 && entry %in% include)
-    { tax_anno_plot <- apply_annotation(tax_anno_plot,entry,anno_colors[index],fill=fill,cl_type=taxgroup) }
+    { tax_anno_plot <- apply_annotation(tax_anno_plot,phylotree,entry,anno_colors[index],fill=fill,cl_type=taxgroup) }
     else
-    { tax_anno_plot <- apply_annotation(tax_anno_plot,entry,anno_colors[index],fill="none",cl_type=taxgroup) }
+    { tax_anno_plot <- apply_annotation(tax_anno_plot,phylotree,entry,anno_colors[index],fill="none",cl_type=taxgroup) }
     
     index <- index+1
   }
@@ -160,9 +170,7 @@ annotate_by_taxgroup <- function(taxgroup, phyloplot, path="", fill="full", colo
     else
     { save_path <- paste(path,taxgroup,"_only-",paste(include,collapse="-"),".pdf",sep='')  }
     # save the created plot as a pdf
-    pdf(file=save_path,width=35,height=75)
-    print(tax_anno_plot)
-    dev.off()
+    ggsave(save_path,tax_anno_plot,device="pdf",width=wd,height=ht,limitsize=FALSE)
     print(paste("Colored tree saved as",save_path))
   }
   else
@@ -170,21 +178,57 @@ annotate_by_taxgroup <- function(taxgroup, phyloplot, path="", fill="full", colo
   
 }
 
-make_subtree <- function(input_node,clade,path,wd=10,ht=10)
+make_comparison_subtree <- function(input_node,clade,phylotree,path,wd=10,ht=10)
 {
   print(paste("=== Generating Subtree for ",clade," ===",sep=""))
   # create pdf device for saving
-  save_path <- paste(path,clade,".pdf", sep="")
+  save_path <- paste(path,"Comp_",clade,".pdf", sep="")
   pdf(file=save_path, width=wd, height=ht)
   # get all descendants of input node
-  tips <- c(getDescendants(renamed_tree,input_node))
+  tips <- c(getDescendants(phylotree,input_node))
   # get subtree of input node and title it
-  subtree <- zoom(renamed_tree,tips,subtree = FALSE,main=paste("Subtree of ",clade,sep=""),align.tip.label=FALSE)
+  subtree <- zoom(phylotree,tips,subtree = FALSE,main=paste("Subtree of ",clade,sep=""),align.tip.label=FALSE)
   # print the tree to save it as pdf
   print(subtree)
   dev.off()
   print(paste("Subtree tree saved as",save_path))
 }
+
+make_annotation_subtree <- function(input_node,clade,phylotree,path,anno_group="none",tree_layout="roundrect",reroot_node="none",node_labels=FALSE,anno_color="blue",wd=10,ht=10,export=FALSE)
+{
+  all_subtrees <- subtrees(phylotree)
+  for (entry in all_subtrees) {
+    if (entry$name==input_node){
+      sub_tree <- entry
+    }
+  }
+  if (!exists("sub_tree")){
+    print("Node not found in tree.")
+    exit
+  } else {
+    if (reroot_node!="none")
+    { sub_tree <- reroot_tree(sub_tree,reroot_node) }
+    
+    
+    renamed_subtree <- rename_taxa(sub_tree, data_matrix, key = 1, value = mainTipName)
+    sub_plot <- ggtree(renamed_subtree,layout=tree_layout,title=paste("Subtree of ",clade,sep=""))
+    if (node_labels==TRUE) {
+    sub_plot <- sub_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0.001)+geom_text(aes(label=node),hjust=.1)+theme_tree()
+    } else {
+      sub_plot <- sub_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0.001)+theme_tree()
+    }
+  }
+  
+  save_path <- paste(path,"Anno_",clade,".pdf", sep="")
+  if (anno_group!="none")
+  {
+    out_plot <- annotate_by_taxgroup(anno_group,sub_plot,sub_tree,path=save_path,colorscheme=anno_color,wd=wd,ht=ht,export=export)
+  } else {
+    out_plot <- sub_plot
+  }
+  return(out_plot)
+}
+
 
 # Helper function: Compute ancestral states in a bottom-up (postorder) pass.
 fast_get_ancestral_state <- function(tree, tip_states) {
