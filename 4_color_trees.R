@@ -16,6 +16,7 @@ library(geiger)
 library(randomcoloR)
 library(DBI) # SQLite-Library
 library(glue) # for making nice text
+library(svglite) # for exporting trees as svg for manual annotation
 # import custom functions
 source("4-1_functions.R")
 
@@ -66,25 +67,35 @@ rerooted_tree <- import_tree(treefile, outgroup)
 # rename taxa in rerooted tree
 renamed_tree <- rename_taxa(rerooted_tree, data_matrix, key = 1, value = mainTipName)
 
+# add phylotree with bootstrap values
+bs_tibble <- tibble(
+  node=1:Nnode(renamed_tree)+Ntip(renamed_tree),
+  bootstrap=renamed_tree$node.label
+)
+
+bootstrap_plot <- ggtree(renamed_tree, layout=tree_layout) %<+% bs_tibble
+bootstrap_plot <- bootstrap_plot + theme_tree2()+geom_rootpoint()+geom_aline()+geom_text(aes(label=bootstrap),hjust=-0.1,size=3)+geom_tiplab(aes(label=label),align = TRUE)+theme_tree()
+
 # make tree visualization basic plot and set basic parameters
 base_plot <- ggtree(renamed_tree,layout = tree_layout)
 base_plot <- base_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0)+theme_tree()
+
 
 # make reference plot without renamed tips
 make_reference(rerooted_tree, paste(out_dir, savemod, "_ReferencePlot.pdf", sep = ""))
 
 
-### Colorblocked Trees ###
-# set output path
+### Annotated Trees ###
+# set output path for colored trees and set vectors with annotation colors
 path_colored <- paste(out_dir,savemod,"_ColoredPlot_",sep="")
-
-# set a vector with annotation colors and make tree annotated with class
 anno_colors_class <- c("green3","blue","brown","purple4","blue","violet","green2","grey","blue","black","blue","green4","pink4","red4")
+anno_colors_taxgroup <- c("green3","blue","brown","purple4","violet","green2","grey","black","green4","pink4","red4","grey","darkgrey")
+
+# make tree annotated with class
 annotate_by_taxgroup("Class",base_plot,path_colored,col_vec = anno_colors_class)
 annotate_by_taxgroup("Class",base_plot,path_colored,col_vec = anno_colors_class, include = c("Teleostei","Holostei","Chondrostei","Cladistii","Elasmobranchii"))
 
-# set a vector with annotation colors and make tree annotated with taxGroup
-anno_colors_taxgroup <- c("green3","blue","brown","purple4","violet","green2","grey","black","green4","pink4","red4","grey","darkgrey")
+# make tree annotated with taxGroup
 annotate_by_taxgroup("taxGroup", base_plot, path_colored, col_vec = anno_colors_taxgroup)
 annotate_by_taxgroup("taxGroup", base_plot, path_colored, col_vec = anno_colors_taxgroup, include=c("Fish"))
 
@@ -93,17 +104,26 @@ annotate_by_taxgroup("Phylum",base_plot,path_colored,colorscheme = "blue")
 annotate_by_taxgroup("Order",base_plot,path_colored,colorscheme = "blue")
 annotate_by_taxgroup("Family", base_plot,path_colored,colorscheme = "blue")
 
-# put base plot into new plot object
-main_plot_taxgroups <- base_plot
 # save uncolored tree as pdf
 pdf(file=paste(out_dir,savemod,"_MainPlot.pdf", sep=""), width=35, height=75)
-main_plot_taxgroups
+base_plot
+dev.off()
+
+# set output path for bootstrapped trees
+path_bootstrap <- paste(out_dir,savemod,"_BootstrapPlot_", sep="")
+
+# make annotated bootstrap trees
+annotate_by_taxgroup("Class",bootstrap_plot,path_bootstrap,col_vec = anno_colors_class)
+annotate_by_taxgroup("Order",bootstrap_plot,path_bootstrap,colorscheme = "blue")
+
+# save uncolored bootstrap tree as pdf
+pdf(file=paste(out_dir,savemod,"_BootstrapPlot.pdf", sep=""), width=35, height=75)
+bootstrap_plot
 dev.off()
 
 
 ### Subtrees ###
 path_subtree <- paste(out_dir,savemod,"_SubtreePlot_",sep="")
-
 
 # check ASTER version and use different nodes for subtrees
 if (aster_ver=="astral4") {
@@ -119,9 +139,9 @@ if (aster_ver=="astral4") {
   make_subtree(507,"Amphibians",path_subtree,10,10)
   make_subtree(469,"Mammals",path_subtree,10,10)
   make_subtree(412,"Fish",path_subtree,20,50)
-  make_subtree(569,"Salmoniformes",path_subtree,10,10)
+  make_subtree(569,"Salmoniformes",path_subtree,10,5)
+  make_subtree(527,"Anguilliformes",path_subtree,10,5)
 }
-
 
 
 ### Trait-Trees ###
