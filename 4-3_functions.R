@@ -158,7 +158,6 @@ annotate_by_taxgroup <- function(taxgroup, phyloplot, phylotree, path="", fill="
     { tax_anno_plot <- apply_annotation(tax_anno_plot,phylotree,entry,anno_colors[index],fill=fill,cl_type=taxgroup) }
     else
     { tax_anno_plot <- apply_annotation(tax_anno_plot,phylotree,entry,anno_colors[index],fill="none",cl_type=taxgroup) }
-    
     index <- index+1
   }
   
@@ -181,14 +180,19 @@ make_comparison_subtree <- function(input_node,clade,phylotree,path,wd=10,ht=10)
 {
   print(paste("=== Generating Subtree for ",clade," ===",sep=""))
   # create pdf device for saving
-  save_path <- paste(path,"Comp_",clade,".pdf", sep="")
+  save_path <- paste0(path,"Comp_",clade,".pdf")
+  # create pdf device for saving
+  pdf(file=save_path,width=wd,height=ht)
   
   # get all descendants of input node
   tips <- c(getDescendants(phylotree,input_node))
   # get subtree of input node and title it
   subtree <- zoom(phylotree,tips,subtree = FALSE,main=paste("Subtree of ",clade,sep=""),align.tip.label=FALSE)
-  # print the tree to save it as pdf
-  ggsave(save_path,subtree,device="pdf",width=wd,height=ht,limitsize=FALSE)
+  
+  # print the tree out
+  print(subtree)
+  dev.off()
+  
   print(paste("Subtree tree saved as",save_path))
 }
 

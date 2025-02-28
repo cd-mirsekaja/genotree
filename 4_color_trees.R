@@ -26,7 +26,7 @@ outgroup <- "359"
 # set threshold modifier
 threshold <- "thr0_35"
 # set aster version modifier
-aster_ver <- "astralpro3"
+aster_ver <- "astral4"
 # set layout for export tree. Can be 'rectangular', 'roundrect', 'circular'.
 tree_layout <- "rectangular"
 
