@@ -126,7 +126,7 @@ apply_annotation <- function(anno_plot, phylotree, lb, cl, fill = "none", cl_typ
 }
 
 # function for annotating a ggtree phylo plot with colors and taxon group names
-annotate_by_taxgroup <- function(taxgroup, phyloplot, phylotree, path="", fill="full", colorscheme="monochrome", col_vec=c(), include=c(), wd=30, ht=75, export=TRUE)
+annotate_by_taxgroup <- function(taxgroup, phyloplot, phylotree, path="", fill="full", colorscheme="monochrome", col_vec=c(), include=c(), wd=30, ht=75, export=TRUE, output_format="pdf")
 {
   tax_anno_plot <- phyloplot
   color_count <- length(unique(data_matrix[[taxgroup]]))
@@ -164,11 +164,11 @@ annotate_by_taxgroup <- function(taxgroup, phyloplot, phylotree, path="", fill="
   if (export==TRUE)
   {
     if (length(include)==0)
-    { save_path <- paste0(path,taxgroup,".pdf") }
+    { save_path <- paste0(path,taxgroup,".",output_format) }
     else
-    { save_path <- paste0(path,taxgroup,"_only-",paste(include,collapse="-"),".pdf")  }
+    { save_path <- paste0(path,taxgroup,"_only-",paste(include,collapse="-"),".",output_format)  }
     # save the created plot as a pdf
-    ggsave(save_path,tax_anno_plot,device="pdf",width=wd,height=ht,limitsize=FALSE)
+    ggsave(save_path,tax_anno_plot,device=output_format,width=wd,height=ht,limitsize=FALSE)
     print(paste("Colored tree saved as",save_path))
   }
   else
@@ -176,18 +176,21 @@ annotate_by_taxgroup <- function(taxgroup, phyloplot, phylotree, path="", fill="
   
 }
 
-make_comparison_subtree <- function(input_node,clade,phylotree,path,wd=10,ht=10)
+make_comparison_subtree <- function(input_node,clade,phylotree,path,wd=10,ht=10,output_format="jpeg")
 {
-  print(paste("=== Generating Subtree for ",clade," ===",sep=""))
+  print(paste0("=== Generating Comparison Subtree for ",clade," ==="))
   # create pdf device for saving
-  save_path <- paste0(path,"Comp_",clade,".pdf")
-  # create pdf device for saving
-  pdf(file=save_path,width=wd,height=ht)
+  save_path <- paste0(path,"Comp_",clade,".",output_format)
+  # create device for saving
+  if (output_format=="pdf")
+    { pdf(file=save_path,width=wd,height=ht,units="in") }
+  else if (output_format=="jpeg")
+    { jpeg(file=save_path,width=wd,height=ht,units="in",res=300) }
   
   # get all descendants of input node
   tips <- c(getDescendants(phylotree,input_node))
   # get subtree of input node and title it
-  subtree <- zoom(phylotree,tips,subtree = FALSE,main=paste("Subtree of ",clade,sep=""),align.tip.label=FALSE)
+  subtree <- zoom(phylotree,tips,subtree = FALSE,align.tip.label=FALSE)
   
   # print the tree out
   print(subtree)
@@ -196,8 +199,9 @@ make_comparison_subtree <- function(input_node,clade,phylotree,path,wd=10,ht=10)
   print(paste("Subtree tree saved as",save_path))
 }
 
-make_annotation_subtree <- function(input_node,clade,phylotree,path,anno_group="none",tree_layout="roundrect",reroot_node="none",node_labels=FALSE,anno_color="blue",wd=10,ht=10,export=TRUE)
+make_annotation_subtree <- function(input_node,clade,phylotree,path,anno_group="none",tree_layout="roundrect",reroot_node="none",node_labels=FALSE,anno_color="blue",wd=10,ht=10,export=TRUE,output_format="pdf")
 {
+  print(paste("=== Generating Annotated Subtree for ",clade," ===",sep=""))
   all_subtrees <- subtrees(phylotree)
   for (entry in all_subtrees) {
     if (entry$name==input_node){
@@ -214,19 +218,33 @@ make_annotation_subtree <- function(input_node,clade,phylotree,path,anno_group="
     renamed_subtree <- rename_taxa(sub_tree, data_matrix, key = 1, value = mainTipName)
     sub_plot <- ggtree(renamed_subtree,layout=tree_layout)
     if (node_labels==TRUE) {
-    sub_plot <- sub_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0.001)+geom_text(aes(label=node),hjust=.1)+theme_tree()
+    sub_plot <- sub_plot +
+      theme_tree() +
+      geom_rootpoint() +
+      geom_tiplab(offset = 0.0005) +
+      geom_text(aes(label=node),hjust=.1) +
+      coord_cartesian(clip = "off") +
+      hexpand(0.3) + 
+      theme(plot.margin = margin(10, 10, 10, 10))
     } else {
-      sub_plot <- sub_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0.001)+theme_tree()
+      sub_plot <- sub_plot +
+        theme_tree() +
+        geom_rootpoint() +
+        geom_tiplab(offset = 0.0005) +
+        coord_cartesian(clip = "off") +
+        hexpand(0.3) + 
+        theme(plot.margin = margin(10, 10, 10, 10))
     }
   }
   save_path <- paste0(path,"Anno_",clade)
   if (anno_group!="none")
   {
-    out_plot <- annotate_by_taxgroup(anno_group,sub_plot,sub_tree,path=save_path,colorscheme=anno_color,wd=wd,ht=ht,export=export)
+    out_plot <- annotate_by_taxgroup(anno_group,sub_plot,sub_tree,path=save_path,colorscheme=anno_color,wd=wd,ht=ht,export=export,output_format=output_format)
   } else {
     out_plot <- sub_plot
-    save_path <- paste(save_path,".pdf")
-    ggsave(save_path,out_plot,device="pdf",width=wd,height=ht,limitsize=FALSE)
+    save_path <- paste0(save_path,".",output_format)
+    ggsave(save_path,out_plot,device=output_format,width=wd,height=ht,limitsize=FALSE,units="in")
+    print(paste0("Subtree saved as ",save_path))
   }
   return(out_plot)
 }

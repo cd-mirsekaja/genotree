@@ -26,7 +26,7 @@ outgroup <- "359"
 # set threshold modifier
 threshold <- "thr0_35"
 # set aster version modifier
-aster_ver <- "astral4"
+aster_ver <- "astralpro3"
 # set layout for export tree. Can be 'rectangular', 'roundrect', 'circular'.
 tree_layout <- "rectangular"
 
@@ -82,8 +82,8 @@ if (aster_ver=="astral4") {
   make_comparison_subtree(400,"Fish",renamed_tree,path_subtree,20,50)
   
   # without the main tree on the left, annotated by order
-  make_annotation_subtree(405,"Sauropsida",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,wd=25,ht=15)
-  make_annotation_subtree(400,"Fish",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,wd=35,ht=50)
+  make_annotation_subtree(405,"Sauropsida",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,output_format="jpeg",wd=25,ht=15)
+  make_annotation_subtree(400,"Fish",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,output_format="jpeg",wd=35,ht=50)
 
 } else if (aster_ver=="astral-pro3") {
   # block for ASTRAL-Pro3
@@ -97,11 +97,11 @@ if (aster_ver=="astral4") {
   make_comparison_subtree(527,"Anguilliformes",renamed_tree,path_subtree,10,5)
   
   # without the main tree on the left, annotated by order
-  make_annotation_subtree(417,"Sauropsida",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,wd=25,ht=15)
-  make_annotation_subtree(412,"Fish",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,wd=35,ht=50)
+  make_annotation_subtree(417,"Sauropsida",rerooted_tree,path_subtree,anno_group="Order",output_format="jpeg",export=TRUE,wd=25,ht=15)
+  make_annotation_subtree(412,"Fish",rerooted_tree,path_subtree,anno_group="Order",output_format="jpeg",export=TRUE,wd=35,ht=50)
   
-  make_annotation_subtree(569,"Salmoniformes",rerooted_tree,path_subtree,export=TRUE,wd=20,ht=5)
-  make_annotation_subtree(527,"Anguilliformes",rerooted_tree,path_subtree,export=TRUE,wd=20,ht=5)
+  make_annotation_subtree(569,"Salmoniformes",rerooted_tree,path_subtree,output_format="jpeg",export=TRUE,wd=15,ht=5)
+  make_annotation_subtree(527,"Anguilliformes",rerooted_tree,path_subtree,output_format="jpeg",export=TRUE,wd=15,ht=5)
 }
 
 
