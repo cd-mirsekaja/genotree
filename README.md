@@ -46,6 +46,14 @@ The pipeline consists of multiple scripts working together. Input files and fold
 - renames tree tips to make postprocessing easier
 
 
+[4_color_trees.R](4_color_trees.R)
+- calls 4-1_functions.R
+- gets a phylogenetic tree and makes several differently annotated versions of it that get saved as pdfs.
+
+
+[4-1_function.R](4-1_function.R)
+- provides a multitude of custom functions for tree annotation
+
 
 **Utilities:**
 
