@@ -47,11 +47,15 @@ The pipeline consists of multiple scripts working together. Input files and fold
 
 
 [4_color_trees.R](4_color_trees.R)
-- calls 4-1_functions.R
+- calls 4-3_functions.R and 4-1_load_trees.R
 - gets a phylogenetic tree and makes several differently annotated versions of it that get saved as pdfs.
 
 
-[4-1_function.R](4-1_function.R)
+[4-1_load_trees.R](4-1_load_trees.R)
+- contains the preamble for 4_color_trees.R to load phylo and plot trees into the workspace
+
+
+[4-3_functions.R](4-3_functions.R)
 - provides a multitude of custom functions for tree annotation
 
 
