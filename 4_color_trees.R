@@ -20,6 +20,10 @@ source("/Volumes/home/genotree/4-1_functions.R")
 
 # set working directory
 setwd("~/Documents/Programming/Bachelorarbeit/tree_recoloring/main")
+source("/Volumes/home/genotree/4-1_functions.R")
+
+# set working directory
+setwd("~/Documents/Programming/Bachelorarbeit/tree_recoloring/main")
 
 # set outgroup for rerooting. 298 is Petromyzon marinus, 359 is Asterias rubens, 362 is Pecten maximus
 outgroup <- "359"
@@ -76,11 +80,23 @@ if (tree_layout=="rectangular" || tree_layout=="roundrect") {
   base_plot <- base_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0.5)+geom_treescale()+theme_tree()
 }
 
+# make tree visualization basic plot and set aesthetic parameters
+base_plot <- ggtree(renamed_tree,layout = tree_layout)
+if (tree_layout=="rectangular" || tree_layout=="roundrect") {
+  base_plot <- base_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0)+theme_tree()
+} else if (tree_layout=="circular") {
+  base_plot <- base_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0.5)+geom_treescale()+theme_tree()
+}
+
 # add phylotree with bootstrap values
+bootstrap_tibble <- tibble(
 bootstrap_tibble <- tibble(
   node=1:Nnode(renamed_tree)+Ntip(renamed_tree),
   bootstrap=renamed_tree$node.label)
+  bootstrap=renamed_tree$node.label)
 
+bootstrap_plot <- ggtree(renamed_tree, layout="rectangular") %<+% bootstrap_tibble
+bootstrap_plot <- bootstrap_plot + theme_tree2()+geom_rootpoint()+geom_text(aes(label=bootstrap),hjust=-0.1,size=3)+geom_tiplab(aes(label=label),align = TRUE)+geom_aline()+theme_tree()
 bootstrap_plot <- ggtree(renamed_tree, layout="rectangular") %<+% bootstrap_tibble
 bootstrap_plot <- bootstrap_plot + theme_tree2()+geom_rootpoint()+geom_text(aes(label=bootstrap),hjust=-0.1,size=3)+geom_tiplab(aes(label=label),align = TRUE)+geom_aline()+theme_tree()
 
@@ -97,11 +113,18 @@ anno_colors_taxgroup <- c("green3","blue","brown","purple4","violet","green2","g
 # make tree annotated with class
 annotate_by_taxgroup("Class",base_plot,rerooted_tree,path_colored,col_vec = anno_colors_class)
 annotate_by_taxgroup("Class",base_plot,rerooted_tree,path_colored,col_vec = anno_colors_class, include = c("Teleostei","Holostei","Chondrostei","Cladistii","Elasmobranchii"))
+annotate_by_taxgroup("Class",base_plot,rerooted_tree,path_colored,col_vec = anno_colors_class)
+annotate_by_taxgroup("Class",base_plot,rerooted_tree,path_colored,col_vec = anno_colors_class, include = c("Teleostei","Holostei","Chondrostei","Cladistii","Elasmobranchii"))
 # make tree annotated with taxGroup
+annotate_by_taxgroup("taxGroup", base_plot,rerooted_tree, path_colored, col_vec = anno_colors_taxgroup)
+annotate_by_taxgroup("taxGroup", base_plot,rerooted_tree, path_colored, col_vec = anno_colors_taxgroup, include=c("Fish"))
 annotate_by_taxgroup("taxGroup", base_plot,rerooted_tree, path_colored, col_vec = anno_colors_taxgroup)
 annotate_by_taxgroup("taxGroup", base_plot,rerooted_tree, path_colored, col_vec = anno_colors_taxgroup, include=c("Fish"))
 
 # make assorted annotated trees
+annotate_by_taxgroup("Phylum",base_plot,rerooted_tree,path_colored,colorscheme = "blue")
+annotate_by_taxgroup("Order",base_plot,rerooted_tree,path_colored,colorscheme = "blue")
+annotate_by_taxgroup("Family", base_plot,rerooted_tree,path_colored,colorscheme = "blue")
 annotate_by_taxgroup("Phylum",base_plot,rerooted_tree,path_colored,colorscheme = "blue")
 annotate_by_taxgroup("Order",base_plot,rerooted_tree,path_colored,colorscheme = "blue")
 annotate_by_taxgroup("Family", base_plot,rerooted_tree,path_colored,colorscheme = "blue")
@@ -123,13 +146,23 @@ dev.off()
 annotate_by_taxgroup("Class",bootstrap_plot,rerooted_tree,path_bootstrap,col_vec = anno_colors_class)
 annotate_by_taxgroup("Order",bootstrap_plot,rerooted_tree,path_bootstrap,colorscheme = "blue")
 
+# make annotated bootstrap trees
+annotate_by_taxgroup("Class",bootstrap_plot,rerooted_tree,path_bootstrap,col_vec = anno_colors_class)
+annotate_by_taxgroup("Order",bootstrap_plot,rerooted_tree,path_bootstrap,colorscheme = "blue")
+
 
 ### Subtrees ###
 path_subtree <- paste0(out_dir,savemod,"_SubtreePlot_")
 
 # check ASTER version and make subtrees
+# check ASTER version and make subtrees
 if (aster_ver=="astral4") {
   # block for ASTRAL-IV
+  # with the main tree on the left
+  make_comparison_subtree(407,"Birds",renamed_tree,path_subtree,10,10)
+  make_comparison_subtree(405,"Sauropsida",renamed_tree,path_subtree,10,15)
+  make_comparison_subtree(457,"Mammals",renamed_tree,path_subtree,10,10)
+  make_comparison_subtree(400,"Fish",renamed_tree,path_subtree,20,50)
   # with the main tree on the left
   make_comparison_subtree(407,"Birds",renamed_tree,path_subtree,10,10)
   make_comparison_subtree(405,"Sauropsida",renamed_tree,path_subtree,10,15)
@@ -159,6 +192,7 @@ if (aster_ver=="astral4") {
 ### Trait-Trees ###
 # make a ggtree phylo plot for annotating with the traits
 main_plot_traits <- annotate_by_taxgroup("Order",base_plot,rerooted_tree,fill="none",export=FALSE)
+main_plot_traits <- annotate_by_taxgroup("Order",base_plot,rerooted_tree,fill="none",export=FALSE)
 
 # convert Index column in data_matrix to character (ChatGPT)
 data_matrix$IDX <- as.character(data_matrix$IDX)
@@ -169,6 +203,7 @@ tree_data <- tree_data %>%
   left_join(data_matrix, by = c("label" = "IDX"))
 
 # map traits onto its own tree and save the trees as pdfs
+trait_tree(paste(out_dir,savemod,"_TraitPlot_Migration.pdf",sep=''),main_plot_traits,"isMigratory","orange")
 trait_tree(paste(out_dir,savemod,"_TraitPlot_Migration.pdf",sep=''),main_plot_traits,"isMigratory","orange")
 trait_tree(paste(out_dir,savemod,"_TraitPlot_Marine.pdf",sep=''),main_plot_traits,"isMarine","blue")
 trait_tree(paste(out_dir,savemod,"_TraitPlot_Fresh.pdf",sep=''),main_plot_traits,"isFresh","lightblue")
