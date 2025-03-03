@@ -24,6 +24,8 @@ dbDisconnect(db_conn)
 
 headline <- glue("Rooted on {outgroup_name} (IDX {outgroup}).\nThreshold value {threshold}, ASTER version of original consensus tree was {aster_ver}.")
 writeLines(headline,con=log_file,sep="\n")
+# close the connection to the log file
+close(log_file)
 
 # set tip names for all output trees
 data_matrix$refTipName <- paste("(",data_matrix$IDX,")",sep="")

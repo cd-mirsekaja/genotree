@@ -26,7 +26,7 @@ outgroup <- "359"
 # set threshold modifier
 threshold <- "thr0_35"
 # set aster version modifier
-aster_ver <- "astralpro3"
+aster_ver <- "wastral"
 # set layout for export tree. Can be 'rectangular', 'roundrect', 'circular'.
 tree_layout <- "rectangular"
 
@@ -125,5 +125,4 @@ trait_tree(paste(out_dir,savemod,"_TraitPlot_Brackish.pdf",sep=''),main_plot_tra
 trait_tree(paste(out_dir,savemod,"_TraitPlot_AllWater.pdf",sep=''),main_plot_traits,"isAllWater","blue")
 trait_tree(paste(out_dir,savemod,"_TraitPlot_Terrestrial.pdf",sep=''),main_plot_traits,"isTerrestrial","orange")
 
-# close the connection to the log file
-close(log_file)
+
