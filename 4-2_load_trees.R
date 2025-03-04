@@ -3,7 +3,7 @@ load_supertree <- function(outgroup, threshold, aster_ver, tree_layout){
   # set import tree and modificator for saving pdfs
   treefile <- paste("data/treefiles-",threshold,"/all-loci_",aster_ver,".treefile", sep = '', collapse = NULL)
   savemod <- paste("r", outgroup, "-",threshold,"-",aster_ver,"-",tree_layout, sep = "", collapse = NULL)
-  out_dir <- paste("output/",savemod,"/",sep="")
+  out_dir <- paste0("output/",savemod,"/")
   
   # make output subdirectory if it doesn't exist
   if (!file.exists(out_dir))
@@ -50,9 +50,10 @@ load_supertree <- function(outgroup, threshold, aster_ver, tree_layout){
   bootstrap_plot <- get_bootstrap_plot(renamed_tree)
   
   return_list <- list(
+    treefile=treefile,
     savemod=savemod,
-    data_matrix=data_matrix,
     out_dir=out_dir,
+    data_matrix=data_matrix,
     rerooted_tree=rerooted_tree,
     renamed_tree=renamed_tree,
     base_plot=base_plot,
