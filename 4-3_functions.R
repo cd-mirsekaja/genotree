@@ -26,6 +26,12 @@ import_tree <- function(path, outgroup = "none")
   out_tree <- reroot_tree(tree,outgroup)
   return(out_tree)
 }
+import_dend <- function(path,outgroup = "none")
+{
+  dend <- read.dendrogram(path)
+  out_dend <- dend
+  return(out_dend)
+}
 
 # function for making a reference plot and saving it as a file
 make_reference <- function(phylotree, savepath)

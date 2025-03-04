@@ -32,6 +32,14 @@ tree_layout <- "rectangular"
 
 # load phylotree and plot objects into workspace
 source("/Users/privatstudium/Documents/Programming/Bachelorarbeit/0_genotree_repository/4-1_load_trees.R")
+loaded_data <- load_supertree(outgroup,threshold,aster_ver,tree_layout)
+savemod <- loaded_data$savemod
+data_matrix <- loaded_data$data_matrix
+out_dir <- loaded_data$out_dir
+rerooted_tree <- loaded_data$rerooted_tree
+renamed_tree <- loaded_data$renamed_tree
+base_plot <- loaded_data$base_plot
+bootstrap_plot <- loaded_data$bootstrap_plot
 
 # set output paths for saved files
 path_colored <- paste0(out_dir,savemod,"_ColoredPlot_")
@@ -68,7 +76,7 @@ ggsave(paste(out_dir,savemod,"_MainPlot.pdf", sep=""),base_plot,device="pdf",wid
 ggsave(paste0(out_dir,savemod,"_BootstrapPlot.pdf"),bootstrap_plot,device="pdf",width=35,height=75,limitsize=FALSE)
 
 # make annotated bootstrap trees
-annotate_by_taxgroup("Class",bootstrap_plot,rerooted_tree,path_bootstrap,col_vec = anno_colors_class)
+annotate_by_taxgroup("Class",bootstrap_plot,rerooted_tree,path_bootstrap,col_vec = anno_colors_class,output_format="jpeg")
 annotate_by_taxgroup("Order",bootstrap_plot,rerooted_tree,path_bootstrap,colorscheme = "blue")
 
 
