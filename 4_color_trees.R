@@ -16,7 +16,7 @@ library(DBI) # SQLite-Library
 library(glue) # for making nice text
 library(svglite) # for exporting trees as svg for manual annotation
 # import custom functions
-source("/Volumes/home/genotree/4-3_functions.R")
+source("/Users/privatstudium/Documents/Programming/Bachelorarbeit/0_genotree_repository/4-3_functions.R")
 
 # set working directory
 setwd("~/Documents/Programming/Bachelorarbeit/tree_recoloring/main")
@@ -26,21 +26,27 @@ outgroup <- "359"
 # set threshold modifier
 threshold <- "thr0_35"
 # set aster version modifier
-aster_ver <- "wastral"
+aster_ver <- "astralpro3"
 # set layout for export tree. Can be 'rectangular', 'roundrect', 'circular'.
 tree_layout <- "rectangular"
 
 # load phylotree and plot objects into workspace
-source("/Volumes/home/genotree/4-1_load_trees.R")
+source("/Users/privatstudium/Documents/Programming/Bachelorarbeit/0_genotree_repository/4-1_load_trees.R")
+
+# set output paths for saved files
+path_colored <- paste0(out_dir,savemod,"_ColoredPlot_")
+path_bootstrap <- paste0(out_dir,savemod,"_BootstrapPlot_")
+path_subtree <- paste0(out_dir,savemod,"_SubtreePlot_")
+
+# set vectors with annotation colors
+anno_colors_class <- c("green3","blue","brown","purple4","blue","violet","green2","grey","blue","black","blue","green4","pink4","red4")
+anno_colors_taxgroup <- c("green3","blue","brown","purple4","violet","green2","grey","black","green4","pink4","red4","grey","darkgrey")
+
 
 # make reference plot without renamed tips
 make_reference(rerooted_tree, paste(out_dir, savemod, "_ReferencePlot.pdf", sep = ""))
 
 ### Annotated Trees ###
-# set output path for colored trees and set vectors with annotation colors
-path_colored <- paste(out_dir,savemod,"_ColoredPlot_",sep="")
-anno_colors_class <- c("green3","blue","brown","purple4","blue","violet","green2","grey","blue","black","blue","green4","pink4","red4")
-anno_colors_taxgroup <- c("green3","blue","brown","purple4","violet","green2","grey","black","green4","pink4","red4","grey","darkgrey")
 
 # make tree annotated with class
 annotate_by_taxgroup("Class",base_plot,rerooted_tree,path_colored,col_vec = anno_colors_class)
@@ -50,7 +56,6 @@ annotate_by_taxgroup("Class",base_plot,rerooted_tree,path_colored,col_vec = anno
 annotate_by_taxgroup("taxGroup", base_plot,rerooted_tree, path_colored, col_vec = anno_colors_taxgroup)
 annotate_by_taxgroup("taxGroup", base_plot,rerooted_tree, path_colored, col_vec = anno_colors_taxgroup, include=c("Fish"))
 
-
 # make assorted annotated trees
 annotate_by_taxgroup("Phylum",base_plot,rerooted_tree,path_colored,colorscheme = "blue")
 annotate_by_taxgroup("Order",base_plot,rerooted_tree,path_colored,colorscheme = "blue")
@@ -59,8 +64,6 @@ annotate_by_taxgroup("Family", base_plot,rerooted_tree,path_colored,colorscheme 
 # save uncolored tree as pdf
 ggsave(paste(out_dir,savemod,"_MainPlot.pdf", sep=""),base_plot,device="pdf",width=35,height=75,limitsize=FALSE)
 
-# set output path for bootstrapped trees
-path_bootstrap <- paste0(out_dir,savemod,"_BootstrapPlot_")
 # save uncolored bootstrap tree as pdf
 ggsave(paste0(out_dir,savemod,"_BootstrapPlot.pdf"),bootstrap_plot,device="pdf",width=35,height=75,limitsize=FALSE)
 
@@ -70,7 +73,6 @@ annotate_by_taxgroup("Order",bootstrap_plot,rerooted_tree,path_bootstrap,colorsc
 
 
 ### Subtrees ###
-path_subtree <- paste0(out_dir,savemod,"_SubtreePlot_")
 
 # check ASTER version and make subtrees
 if (aster_ver=="astral4") {
@@ -83,7 +85,7 @@ if (aster_ver=="astral4") {
   
   # without the main tree on the left, annotated by order
   make_annotation_subtree(405,"Sauropsida",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,output_format="jpeg",wd=25,ht=15)
-  make_annotation_subtree(400,"Fish",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,output_format="jpeg",wd=35,ht=50)
+  make_annotation_subtree(400,"Fish",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,output_format="jpeg",wd=35,ht=50,reroot_node=7)
 
 } else if (aster_ver=="astral-pro3") {
   # block for ASTRAL-Pro3
@@ -98,7 +100,8 @@ if (aster_ver=="astral4") {
   
   # without the main tree on the left, annotated by order
   make_annotation_subtree(417,"Sauropsida",rerooted_tree,path_subtree,anno_group="Order",output_format="jpeg",export=TRUE,wd=25,ht=15)
-  make_annotation_subtree(412,"Fish",rerooted_tree,path_subtree,anno_group="Order",output_format="jpeg",export=TRUE,wd=35,ht=50)
+  # subtree for the fish, rooted at Petromyzon marinus
+  make_annotation_subtree(412,"Fish",rerooted_tree,path_subtree,anno_group="Order",output_format="jpeg",export=TRUE,wd=35,ht=50,reroot_node=21)
   
   make_annotation_subtree(569,"Salmoniformes",rerooted_tree,path_subtree,output_format="jpeg",export=TRUE,wd=15,ht=5)
   make_annotation_subtree(527,"Anguilliformes",rerooted_tree,path_subtree,output_format="jpeg",export=TRUE,wd=15,ht=5)

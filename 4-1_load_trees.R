@@ -45,20 +45,8 @@ if (tree_layout=="rectangular" || tree_layout=="roundrect") {
   base_plot <- base_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0.5)+geom_treescale()+theme_tree()
 }
 
-# make tree visualization basic plot and set aesthetic parameters
-base_plot <- ggtree(renamed_tree,layout = tree_layout)
-if (tree_layout=="rectangular" || tree_layout=="roundrect") {
-  base_plot <- base_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0)+theme_tree()
-} else if (tree_layout=="circular") {
-  base_plot <- base_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0.5)+geom_treescale()+theme_tree()
-}
+bootstrap_plot <- get_bootstrap_plot(renamed_tree)
 
-# add phylotree with bootstrap values
-bootstrap_tibble <- tibble(
-  node=1:Nnode(renamed_tree)+Ntip(renamed_tree),
-  bootstrap=renamed_tree$node.label)
-  
-bootstrap_plot <- ggtree(renamed_tree, layout="rectangular") %<+% bootstrap_tibble
-bootstrap_plot <- bootstrap_plot + theme_tree2()+geom_rootpoint()+geom_text(aes(label=bootstrap),hjust=-0.1,size=3)+geom_tiplab(aes(label=label),align = TRUE)+geom_aline()+theme_tree()
-bootstrap_plot <- ggtree(renamed_tree, layout="rectangular") %<+% bootstrap_tibble
-bootstrap_plot <- bootstrap_plot + theme_tree2()+geom_rootpoint()+geom_text(aes(label=bootstrap),hjust=-0.1,size=3)+geom_tiplab(aes(label=label),align = TRUE)+geom_aline()+theme_tree()
+
+
+

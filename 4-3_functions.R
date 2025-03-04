@@ -176,6 +176,20 @@ annotate_by_taxgroup <- function(taxgroup, phyloplot, phylotree, path="", fill="
   
 }
 
+# function for making a bootstrap phyloplot
+get_bootstrap_plot <- function(phylotree,filter_value=0.95)
+{
+  # add phylotree with bootstrap values, by default shows values under 0.95
+  bootstrap_tibble <- tibble(
+    node=1:Nnode(phylotree)+Ntip(phylotree),
+    bootstrap = ifelse(as.numeric(phylotree$node.label) > filter_value, "", phylotree$node.label))
+  
+  bootstrap_plot <- ggtree(phylotree, layout="rectangular") %<+% bootstrap_tibble
+  bootstrap_plot <- bootstrap_plot + theme_tree2()+geom_rootpoint()+geom_text(aes(label=bootstrap),hjust=-0.1,size=3)+geom_tiplab(aes(label=label),offset=0.02)+theme_tree()
+  
+  return(bootstrap_plot)
+}
+
 make_comparison_subtree <- function(input_node,clade,phylotree,path,wd=10,ht=10,output_format="jpeg")
 {
   print(paste0("=== Generating Comparison Subtree for ",clade," ==="))
