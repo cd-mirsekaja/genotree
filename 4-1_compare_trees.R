@@ -50,16 +50,18 @@ dend_ap3 <- as.dendrogram.phylo(tree_ap3)
 dend_a4 <- as.dendrogram.phylo(tree_a4)
 
 # construct tanglegram for the two supertrees
-supertree_tang <- tanglegram(dend_ap3, dend_a4)
+# warning: graphics panel needs certain size
+supertree_tang <- tanglegram(dend1 = dend_ap3, dend2 = dend_a4)
 
 # save the tanglegram as pdf
-save_supertree_tang <- paste0(out_dir,savemod,"-Tanglegram_AP3-A4.pdf")
+save_supertree_tang <- paste0(out_dir,savemod,"-Tanglegram_AP3-A4_test1.pdf")
 pdf(save_supertree_tang,width=40,height=45)
 # plot tanglegram with modifiers
 plot(supertree_tang,
      main_left = "ASTRAL-Pro3", main_right = "ASTRAL-IV",
      main = "Tanglegram of the two main supertrees",
-     highlight_branches_col = TRUE,
+     #highlight_branches_col = TRUE,
+     common_subtrees_color_branches = TRUE,
      margin_top = 10,
      columns_width = c(6,4,6),
      sort = FALSE)
