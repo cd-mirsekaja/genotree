@@ -345,3 +345,25 @@ trait_tree <- function(save_path, treeplot, trait, color)
   ggsave(save_path,main_plot_trait,device="pdf",width=35,height=75,limitsize=FALSE)
   print(paste("Trait tree saved as",save_path))
 }
+
+# function for constructing tanglegrams for the two supertrees
+# warning: graphics panel needs certain size
+tangle_plots <- function(dend_left, dend_right, out_dir,savemod1,savemod2,treename_a,treename_b)
+{
+  print(paste0("Making Tanglegram for ",treename_a," and ",treename_b,"..."))
+  tangle <- tanglegram(dend1 = dend_left, dend2 = dend_right)
+  savepath <- paste0(out_dir,savemod1,"-Tanglegram_Compare-",savemod2,".pdf")
+  print(paste0("Plotting Tanglegram for ",treename_a," and ",treename_b,"..."))
+  pdf(savepath,width=40,height=45)
+  plot(tangle,
+       main_left = treename_a, main_right = treename_b,
+       main = "Tanglegram of the two main supertrees",
+       highlight_branches_col = TRUE,
+       #common_subtrees_color_branches = TRUE,
+       #common_subtrees_color_lines = TRUE,
+       margin_top = 10,
+       columns_width = c(6,4,6),
+       sort = FALSE)
+  dev.off()
+  print(paste0("Tanglegram for ",treename_a," and ",treename_b," saved as\n",savepath))
+}

@@ -68,9 +68,9 @@ tangle_plots <- function(dend_left, dend_right, out_dir,savemod1,savemod2,treena
   plot(tangle,
        main_left = treename_a, main_right = treename_b,
        main = "Tanglegram of the two main supertrees",
-       #highlight_branches_col = TRUE,
-       common_subtrees_color_branches = TRUE,
-       common_subtrees_color_lines = TRUE,
+       highlight_branches_col = TRUE,
+       #common_subtrees_color_branches = TRUE,
+       #common_subtrees_color_lines = TRUE,
        margin_top = 10,
        columns_width = c(6,4,6),
        sort = FALSE)
@@ -85,6 +85,8 @@ tangle_plots(dend_ap3,dend_ap3_real,out_dir,savemod,"AP3-AP3_realigned","ASTRAL-
 tangle_plots(dend_a4,dend_a4_real,out_dir,savemod,"A4-A4_realigned","ASTRAL-IV","ASTRAL-IV (re-aligned)")
 
 tangle_plots(dend_ap3_real,dend_a4_real,out_dir,savemod,"AP3_realigned-A4_realigned","ASTRAL-Pro3 (re-aligned)","ASTRAL-IV (re-aligned)")
+
+tangle_plots(dend_ap3_real,dend_a4_real,out_dir,savemod,"AP3_realigned-A4_realigned_color2","ASTRAL-Pro3 (re-aligned)","ASTRAL-IV (re-aligned)")
 
 #col_rand <- randomcoloR::distinctColorPalette(k=40)
 
