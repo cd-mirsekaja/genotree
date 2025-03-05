@@ -56,37 +56,14 @@ dend_ap3_real <- as.dendrogram.phylo(tree_ap3_real)
 dend_a4 <- as.dendrogram.phylo(tree_a4)
 dend_a4_real <- as.dendrogram.phylo(tree_a4_real)
 
-# function for constructing tanglegrams for the two supertrees
-# warning: graphics panel needs certain size
-tangle_plots <- function(dend_left, dend_right, out_dir,savemod1,savemod2,treename_a,treename_b)
-{
-  print(paste0("Making Tanglegram for ",treename_a," and ",treename_b,"..."))
-  tangle <- tanglegram(dend1 = dend_left, dend2 = dend_right)
-  savepath <- paste0(out_dir,savemod1,"-Tanglegram_Compare-",savemod2,".pdf")
-  print(paste0("Plotting Tanglegram for ",treename_a," and ",treename_b,"..."))
-  pdf(savepath,width=40,height=45)
-  plot(tangle,
-       main_left = treename_a, main_right = treename_b,
-       main = "Tanglegram of the two main supertrees",
-       highlight_branches_col = TRUE,
-       #common_subtrees_color_branches = TRUE,
-       #common_subtrees_color_lines = TRUE,
-       margin_top = 10,
-       columns_width = c(6,4,6),
-       sort = FALSE)
-  dev.off()
-  print(paste0("Tanglegram for ",treename_a," and ",treename_b," saved as\n",savepath))
-}
-
+# tangle plot for ASTRAL-Pro3 and ASTRAL-4
 tangle_plots(dend_ap3,dend_a4,out_dir,savemod,"AP3-A4","ASTRAL-Pro3","ASTRAL-IV")
-
+# tangle plot for ASTRAL-Pro3 and re-aligned ASTRAL-Pro3
 tangle_plots(dend_ap3,dend_ap3_real,out_dir,savemod,"AP3-AP3_realigned","ASTRAL-Pro3","ASTRAL-Pro3 (re-aligned)")
-
+# tangle plot for ASTRAL-4 and re-aligned ASTRAL-4
 tangle_plots(dend_a4,dend_a4_real,out_dir,savemod,"A4-A4_realigned","ASTRAL-IV","ASTRAL-IV (re-aligned)")
-
+# tangle plot for re-aligned ASTRAL-Pro3 and re-aligned ASTRAL-4
 tangle_plots(dend_ap3_real,dend_a4_real,out_dir,savemod,"AP3_realigned-A4_realigned","ASTRAL-Pro3 (re-aligned)","ASTRAL-IV (re-aligned)")
-
-tangle_plots(dend_ap3_real,dend_a4_real,out_dir,savemod,"AP3_realigned-A4_realigned_color2","ASTRAL-Pro3 (re-aligned)","ASTRAL-IV (re-aligned)")
 
 #col_rand <- randomcoloR::distinctColorPalette(k=40)
 
