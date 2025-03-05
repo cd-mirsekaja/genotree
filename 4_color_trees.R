@@ -24,14 +24,14 @@ setwd("~/Documents/Programming/Bachelorarbeit/tree_recoloring/main")
 # set outgroup for rerooting. 298 is Petromyzon marinus, 359 is Asterias rubens, 362 is Pecten maximus
 outgroup <- "359"
 # set threshold modifier
-threshold <- "thr0_35"
+threshold <- "thr0_35-realigned"
 # set aster version modifier
-aster_ver <- "astralpro3"
+aster_ver <- "astral4"
 # set layout for export tree. Can be 'rectangular', 'roundrect', 'circular'.
 tree_layout <- "rectangular"
 
 # load phylotree and plot objects into workspace
-source("/Users/privatstudium/Documents/Programming/Bachelorarbeit/0_genotree_repository/4-1_load_trees.R")
+source("/Users/privatstudium/Documents/Programming/Bachelorarbeit/0_genotree_repository/4-2_load_trees.R")
 loaded_data <- load_supertree(outgroup,threshold,aster_ver,tree_layout)
 savemod <- loaded_data$savemod
 data_matrix <- loaded_data$data_matrix
