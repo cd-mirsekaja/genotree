@@ -9,6 +9,17 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
+### Documentation ###
+# This is a master script for generating phylogenetic supertrees
+# from a set of multiple sequence alignments.
+# Input:
+# - a folder containing a number of FASTA files with MSAs
+# 
+# Output:
+# - multiple folders containing individual gene trees
+# - a folder containing consensus supertrees generated with ASTER
+
+
 # load necessary modules
 module load hpc-env/13.1
 module load parallel/20230822-GCCcore-13.1.0

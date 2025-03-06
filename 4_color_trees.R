@@ -1,5 +1,15 @@
 #!/usr/bin/env Rscript
 
+### Documentation ###
+# Master script for generating annotated phylogenetic trees
+# and exporting them in pdf or jpeg formats
+# Input:
+# - a phylogenetic tree (.treefile) in NEWICK format
+# 
+# Output:
+# - several pdf and jpeg files with different annotated trees
+
+
 # remove all variables from environment
 rm(list=ls())
 
@@ -76,7 +86,7 @@ ggsave(paste(out_dir,savemod,"_MainPlot.pdf", sep=""),base_plot,device="pdf",wid
 ggsave(paste0(out_dir,savemod,"_BootstrapPlot.pdf"),bootstrap_plot,device="pdf",width=35,height=75,limitsize=FALSE)
 
 # make annotated bootstrap trees
-annotate_by_taxgroup("Class",bootstrap_plot,rerooted_tree,path_bootstrap,col_vec = anno_colors_class,output_format="jpeg")
+annotate_by_taxgroup("Class",bootstrap_plot,rerooted_tree,path_bootstrap,col_vec = anno_colors_class,output_format="pdf")
 annotate_by_taxgroup("Order",bootstrap_plot,rerooted_tree,path_bootstrap,colorscheme = "blue")
 
 
@@ -93,7 +103,10 @@ if (aster_ver=="astral4") {
   
   # without the main tree on the left, annotated by order
   make_annotation_subtree(405,"Sauropsida",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,output_format="jpeg",wd=25,ht=15)
-  make_annotation_subtree(400,"Fish",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,output_format="jpeg",wd=35,ht=50,reroot_node=7)
+  make_annotation_subtree(400,"Fish",rerooted_tree,path_subtree,anno_group="Order",export=TRUE,output_format="jpeg",wd=35,ht=50,reroot_node=8)
+  
+  make_annotation_subtree(557,"Salmoniformes",rerooted_tree,path_subtree,output_format="jpeg",export=TRUE,wd=15,ht=5)
+  make_annotation_subtree(513,"Anguilliformes",rerooted_tree,path_subtree,output_format="jpeg",export=TRUE,wd=15,ht=5)
 
 } else if (aster_ver=="astral-pro3") {
   # block for ASTRAL-Pro3

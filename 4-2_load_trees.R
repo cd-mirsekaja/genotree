@@ -1,3 +1,6 @@
+### Documentation ###
+# helper script for providing a function to load the supertrees into the workspace
+
 
 load_supertree <- function(outgroup, threshold, aster_ver, tree_layout){
   # set import tree and modificator for saving pdfs

@@ -9,6 +9,11 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
+### Documentation ###
+# Helper script for making individual gene trees from a given
+# multiple sequence alignment using IQ-TREE 2
+
+
 # load necessary modules
 module load hpc-env/13.1
 module load Python/3.11.3-GCCcore-13.1.0

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Apr 26 16:13:16 2024
-
 @author: Ronja Roesner
 
 Tool for retrieving taxonomic and habitat information from a database using an accession number

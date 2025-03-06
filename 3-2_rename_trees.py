@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Apr 26 17:10:48 2024
-
 @author: Ronja Roesner
 
 Script for renaming the tips of phylogenetic trees with the corresponding index from the database

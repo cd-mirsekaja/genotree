@@ -9,7 +9,12 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
-# gets a locusID as input and aligns all hit files for respective locus
+### Documentation ###
+# This is a helper script for the purpose of aligning all sequences in
+# a given FASTA file. This file is made from all hit files for the input
+# locus.
+# Gets a locusID as input with the naming scheme 'Locus_Exxxx'
+
 
 module load hpc-env/13.1
 module load MAFFT/7.505-GCC-13.1.0-with-extensions

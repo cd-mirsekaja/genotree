@@ -9,6 +9,17 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
+### Documentation ###
+# This is a master script for making multiple sequence alignments out of a set of
+# genomes and genes. It calls on four other scripts.
+# Inputs:
+# - a genome dataset with the genomes named after their Accession Number.
+# - a gene/exon dataset, current naming scheme is locus_Exxxx-NoDups_OK.fa
+#	changing the naming scheme requires rewrite of code.
+# - the utility subscript 'speciesinfo.py' requires an SQL database containing
+#	information on the genomes in the dataset.
+
+
 # get the starting time
 startdate=$(date '+%Y_%m_%d-%H_%M_%S')
 echo === start date and time is $startdate ===

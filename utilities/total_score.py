@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+@author: Ronja Roesner
+
+Tool for calculating the total mean and median scores for a given AliGROOVE table
+"""
 
 import re
 import statistics

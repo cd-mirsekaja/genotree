@@ -1,3 +1,8 @@
+### Documentation ###
+# utility that calls part of the pipeline to rename tree tips
+# 
+# usage sh rename_trees.sh <path/to/treefiles> <save_modifier>
+
 tree_dir=${1}
 savemod=${2}
 

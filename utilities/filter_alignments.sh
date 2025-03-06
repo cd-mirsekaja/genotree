@@ -9,8 +9,14 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
+### Documentation ###
+# utility for filtering all multiple sequence alignments
+# in a given folder for the given threshold
+# 
+# usage sbatch filter_alignments.sh <threshold>
 
-threshold=${1}
+
+threshold=${1:-0.35}
 
 # load necessary modules
 module load hpc-env/13.1

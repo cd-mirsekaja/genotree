@@ -48,10 +48,15 @@ The pipeline consists of multiple scripts working together. Input files and fold
 
 [4_color_trees.R](4_color_trees.R)
 - calls 4-3_functions.R and 4-1_load_trees.R
-- gets a phylogenetic tree and makes several differently annotated versions of it that get saved as pdfs.
+- gets a phylogenetic tree and makes several differently annotated versions of it that get saved as pdfs or jpegs.
 
 
-[4-1_load_trees.R](4-1_load_trees.R)
+[4-1_compare_trees.R](4-1_compare_trees.R)
+- calls 4-3_functions.R and 4-1_load_trees.R
+- gets multiple phylogenetic trees and makes tanglegrams out of them
+
+
+[4-2_load_trees.R](4-1_load_trees.R)
 - contains the preamble for 4_color_trees.R to load phylo and plot trees into the workspace
 
 

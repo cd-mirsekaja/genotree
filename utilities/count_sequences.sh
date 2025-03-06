@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # this script was written with the help of GPT o3-mini
+### Documentation ###
 # utility to calculate the total, mean and median amounts of gene sequences in a folder of .fasta multiple sequence alignments.
 # gets the directory for the filtered files as a parameter. Unfiltered files are set in the script.
+# 
+# usage bash count_sequences.sh <path/to/filtered/files>
 
 compute_stats() {
     # All files are passed as parameters

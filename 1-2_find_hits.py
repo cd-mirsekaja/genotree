@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+The unmodified version of this script was part of the appendix for Hughes et al., 2018.
+
+This script requires an input of an nhmmer-result file, formatted using the --tblout modifier. There also needs to be a genome reference formatted as .fasta passed to the program.
+The input file should be named AccessionNumber-LocusID-table.txt, while the genome file should be named AccessionNumber.fasta. It is important that the spelling of both AccessionNumbers is identical.
+"""
+
 from __future__ import division
 import re
 from sys import argv
@@ -7,10 +15,6 @@ import argparse
 from Bio import SeqIO # type: ignore
 from Bio.Seq import Seq # type: ignore
 from Bio.SeqRecord import SeqRecord # type: ignore
-
-##### Documentation #####
-# This script requires an input of an nhmmer-result file, formatted using the --tblout modifier. There also needs to be a genome reference formatted as .fasta passed to the program.
-# The input file should be named AccessionNumber-LocusID-table.txt, while the genome file should be named AccessionNumber.fasta. It is important that the spelling of both AccessionNumbers is identical.
 
 
 parser = argparse.ArgumentParser()

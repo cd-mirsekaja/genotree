@@ -9,6 +9,11 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
+### Documentation ###
+# Helper script for scoring an input multiple sequence alignments
+# using AliGROOVE
+
+
 # load necessary modules
 module load hpc-env/13.1
 source ~/.bashrc

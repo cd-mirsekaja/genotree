@@ -9,7 +9,11 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
-# gets a genome and finds hits for every exon in the dataset for that genome.
+### Documentation ###
+# This is a helper script for the purpose of generating nhmmer tables and
+# FASTA files containing the hits found by nhmmer. 
+# It gets a genome file and a number of .hmm prediction files as an input.
+
 
 module load hpc-env/13.1
 module load HMMER/3.4-gompi-2023a
@@ -17,7 +21,6 @@ module load Python/3.11.3-GCCcore-13.1.0
 module load Biopython/1.81-foss-2023a
 
 genome="$1"
-cpu_count=$(expr "$2"+0)
 
 # terminates the script if the accession number is on the forbidden list
 if grep -Fxq "$genome" ~/master_input/forbidden_genomes.txt

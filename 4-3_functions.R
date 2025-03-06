@@ -1,3 +1,25 @@
+### Documentation ###
+# helper script for providing several functions
+# 
+# Functions for external use:
+# reroot_tree
+# import_tree
+# make_reference
+# apply_annotation
+# annotate_by_taxgroup
+# get_bootstrap_plot
+# make_comparison_subtree
+# make_annotation_subtree
+# trait_tree
+# tangle_plots
+# 
+# Helper functions for internal use:
+# get_tips
+# get_pure_block_nodes
+# get_mrca
+# fast_get_ancestral_state
+# color_by_trait
+
 
 # function for rerooting a phylotree object
 reroot_tree <- function(phylotree, outgroup = "none")
@@ -43,14 +65,15 @@ make_reference <- function(phylotree, savepath)
   ggsave(savepath,reference_plot,device="pdf",dpi=300,width=30,height=75,limitsize=FALSE)
 }
 
-# A helper function that gets all descendant tips of a given node.
-# This version uses extract.clade to get tip labels.
+# helper function that gets all descendant tips of a given node.
+# written with the help of GPT-o3 mini
 get_tips <- function(tree, node) {
   clade <- extract.clade(tree, node)
   return(clade$tip.label)
 }
 
-# Function to get the highest (maximal) pure clades for a given taxon group.
+# function to get the highest (maximal) pure clades for a given taxon group.
+# written with the help of GPT-o3 mini
 get_pure_block_nodes <- function(taxgroup, tree, taxgroup_type) {
   # Get the taxa (e.g., species IDs) that should be in this taxonomic group.
   taxon_tips <- intersect(data_matrix$IDX[data_matrix[[taxgroup_type]] == taxgroup], tree$tip.label)
@@ -82,7 +105,8 @@ get_pure_block_nodes <- function(taxgroup, tree, taxgroup_type) {
   return(pure_blocks)
 }
 
-# Revised main function that uses the pure block approach for paraphyletic groups.
+# function that finds the MRCAs for a given taxgroup. Can detect paraphyletic groups
+# written with the help of GPT-o3 mini
 get_mrca <- function(taxgroup, tree, taxgroup_type) {
   # Get the list of taxa IDs corresponding to the taxon group.
   taxon_tips <- intersect(data_matrix$IDX[data_matrix[[taxgroup_type]] == taxgroup], tree$tip.label)
@@ -270,7 +294,8 @@ make_annotation_subtree <- function(input_node,clade,phylotree,path,anno_group="
 }
 
 
-# Helper function: Compute ancestral states in a bottom-up (postorder) pass.
+# helper function to compute ancestral states in a bottom-up (postorder) pass.
+# written with the help of GPT-4
 fast_get_ancestral_state <- function(tree, tip_states) {
   Ntip <- length(tree$tip.label)
   Nnode <- tree$Nnode
@@ -298,7 +323,9 @@ fast_get_ancestral_state <- function(tree, tip_states) {
   return(states)
 }
 
-# Revised version of color_by_habitat using the fast ancestral state calculation.
+# function for recursively coloring each branch
+# of a phylotree by the state of a given binary trait
+# written with the help of GPT-4
 color_by_trait <- function(col_plot, char_col_name, cl) {
   # Assume that rerooted_tree is your tree and tree_data is a tibble version obtained earlier.
   Ntip <- length(rerooted_tree$tip.label)
@@ -347,7 +374,6 @@ trait_tree <- function(save_path, treeplot, trait, color)
 }
 
 # function for constructing tanglegrams for the two supertrees
-# warning: graphics panel needs certain size
 tangle_plots <- function(dend_left, dend_right, out_dir,savemod1,savemod2,treename_a,treename_b)
 {
   print(paste0("Making Tanglegram for ",treename_a," and ",treename_b,"..."))

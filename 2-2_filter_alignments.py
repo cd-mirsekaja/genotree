@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan 20 17:39:48 2025
-
 @author: Ronja Rösner
 
 Gets an aligroove score matrix, an alignment file, a maximum threshold and a locus id as inputs. Outputs table containing all values from the input matrix that are below the threshold with their corresponding row and column names as well as an alignment file filtered for the threshold.

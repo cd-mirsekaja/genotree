@@ -9,8 +9,12 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
-# combines renamed gene trees into super trees using different verions of ASTER
+### Documentation ###
+# Utility script that combines renamed gene trees into super trees using different verions of ASTER
+# 
 # usage sh combine_trees.sh <path/to/treefiles> <save_modifier> <working_dir_name>
+
+
 tree_dir=${1}
 savemod=${2}
 work_dir=${3:-wd_test}

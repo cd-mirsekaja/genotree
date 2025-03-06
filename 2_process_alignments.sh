@@ -3,11 +3,21 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-110:00
+#SBATCH --time=0-80:00
 #SBATCH --output=/user/rego3475/master_output/logs/2_process_alignments.%j.out
 #SBATCH --error=/user/rego3475/master_output/logs/2_process_alignments.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
+
+### Documentation ###
+# This is a master script for processing multiple sequence alignments.
+# It calls on three other scripts.
+# Input:
+# - a folder containing a number of multiple sequence alignments, the name must end on *-renamed.fasta
+# 
+# Output:
+# - a folder containing FASTA files that were filtered, then re-aligned.
+
 
 # get the starting time and set an attachment for folder names
 attachment="ONLY-ALLOWED"

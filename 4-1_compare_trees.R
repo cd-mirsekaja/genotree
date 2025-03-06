@@ -1,5 +1,16 @@
 #!/usr/bin/env Rscript
 
+### Documentation ###
+# Master script for making Tanglegrams from multiple phylogenetic
+# trees.
+# 
+# Input:
+# - several phylogenetic trees in NEWICK format
+# 
+# Output:
+# - Tanglegrams of the input trees in PDF format
+
+
 # remove all variables from environment
 rm(list=ls())
 

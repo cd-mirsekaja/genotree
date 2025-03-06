@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+@author: Ronja Roesner
+
+Tool for renaming genes in a FASTA file by replacing all pipe '|' symbols with a hyphen '-'
+"""
+
 import re
 import argparse
 
