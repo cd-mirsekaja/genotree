@@ -46,6 +46,7 @@ mkdir aligroove_output/txt aligroove_output/svg
 # set path for input files
 #alignment_path=~/master_input/all_hits_aligned_renamed
 alignment_path=~/master_input/locus_CRY_full/aligned_files
+alignment_modifier=aligned
 
 # get all files, use for full dataset
 alignment_count=$(ls $alignment_path/*.fasta | wc -l)
@@ -57,7 +58,7 @@ alignment_count=$(ls $alignment_path/*.fasta | wc -l)
 alignment_files=$(ls $alignment_path/*.fasta | head -n $alignment_count)
 
 echo == used $alignment_count alignment files: $alignment_files ==
-find alignment_path/*.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head -n $alignment_count
+find $alignment_path/*.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head -n $alignment_count
 
 echo === starting alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for scoring each alignment
@@ -99,7 +100,7 @@ echo === filtering alignments for score threshold $threshold ===
 for file in $alignment_files; do
     # get ID for current locus
     locus_id=$(echo "${file##*/}" | cut -d'-' -f1)
-    aligroove_matrix=./aligroove_output/txt/AliGROOVE_seqsim_matrix_$locus_id-renamed.txt
+    aligroove_matrix=./aligroove_output/txt/AliGROOVE_seqsim_matrix_$locus_id-$alignment_modifier.txt
     echo filtering locus ID: $locus_id
     # filters alignments for current locus for all exons with a score under the given threshold
     python3 ~/genotree/2-2_filter_alignments.py -d $aligroove_matrix -a $file -l $locus_id -t $threshold
@@ -128,4 +129,4 @@ mv * ~/master_output/filtered_alignments/$enddate-alignments_$attachment
 
 # remove the working directory
 cd ~/genotree
-rm -r $WORK/wd-al_scoring-$startdate-$attachment
+#rm -r $WORK/wd-al_scoring-$startdate-$attachment

@@ -39,7 +39,7 @@ mkdir treefiles-original treefiles-renamed treefiles-final logs trash
 mkdir logs/automatic
 
 # set alignment file path and create genome list logfile
-alignment_path=~/master_input/all_hits_aligned_filtered/0_35_aligned
+alignment_path=~/master_input/locus_CRY_full/aligned_filtered_realigned_files
 touch genome_list.log
 
 # set variable with alignment files
@@ -91,9 +91,9 @@ mv casterpair.log logs/automatic/casterpair_$enddate.log
 mv genome_list.log logs/genomelist_$enddate.log
 
 # move all files to the output folder
-mkdir ~/master_output/phylo_trees/$enddate-trees
-mv * ~/master_output/phylo_trees/$enddate-trees
+mkdir ~/master_output/phylo_trees/$enddate-trees_CRY
+mv * ~/master_output/phylo_trees/$enddate-trees_CRY
 
 # remove the working directory
 cd ~/genotree
-rm -r $WORK/wd-tree_generation-$startdate
+#rm -r $WORK/wd-tree_generation-$startdate

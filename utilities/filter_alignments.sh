@@ -26,14 +26,18 @@ module load MAFFT/7.505-GCC-13.1.0-with-extensions
 
 
 startdate=$(date '+%Y_%m_%d-%H_%M_%S')
-mkdir /dss/work/rego3475/wd_filter-realign_$startdate_$threshold
-cd /dss/work/rego3475/wd_filter-realign_$startdate_$threshold
+mkdir /dss/work/rego3475/wd_filter-realign_CRY_$startdate_$threshold
+cd /dss/work/rego3475/wd_filter-realign_CRY_$startdate_$threshold
 
 mkdir filtered_fasta filtered_realigned_fasta filter_tables
 
+#alignment_path=$(~/master_input/all_hits_aligned_renamed)
+alignment_path=~/master_input/locus_CRY_full/aligned_files
+aligroove_path=~/master_input/AliGROOVE_Matrices/CRY_Matrices
+
 echo === Filtering alignments with threshold $threshold ===
 
-aligroove_files=$(find ~/master_input/AliGROOVE_Matrices/*matrix.txt -type f -printf "%f\n" | grep -v -x -f ~/master_input/forbidden_loci.txt)
+aligroove_files=$(find $aligroove_path/*matrix.txt -type f -printf "%f\n" | grep -v -x -f ~/master_input/forbidden_loci.txt)
 aligroove_count=$(echo $aligroove_files | wc -w)
 
 filter_function(){
@@ -42,10 +46,10 @@ filter_function(){
     locus_id=$(echo "${aligroove_matrix##*/}" | cut -d'-' -f1)
 
     echo Locus ID: $locus_id
-    alignment_file=~/master_input/all_hits_aligned_renamed/$locus_id-renamed.fasta
+    alignment_file=$alignment_path/$locus_id-aligned.fasta
 
     # filters alignments for current locus for all exons with a score under the given threshold
-    python3 ~/genotree/2-2_filter_alignments.py -d ~/master_input/AliGROOVE_Matrices/$aligroove_matrix -a $alignment_file -l $locus_id -t $threshold
+    python3 ~/genotree/2-2_filter_alignments.py -d $aligroove_path/$aligroove_matrix -a $alignment_file -l $locus_id -t $threshold
 }
 
 # export the function so it can be used in the script
