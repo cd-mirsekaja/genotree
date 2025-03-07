@@ -3,7 +3,7 @@
 #SBATCH --partition rosa.p
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=60G
-#SBATCH --time=0-80:00
+#SBATCH --time=0-24:00
 #SBATCH --output=/user/rego3475/master_output/logs/2_process_alignments.%j.out
 #SBATCH --error=/user/rego3475/master_output/logs/2_process_alignments.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -20,7 +20,7 @@
 
 
 # get the starting time and set an attachment for folder names
-attachment="ONLY-ALLOWED"
+attachment="CRY_full"
 startdate=$(date '+%Y_%m_%d-%H_%M_%S')
 echo === start date and time is $startdate ===
 
@@ -44,7 +44,8 @@ mkdir aligroove_output/txt aligroove_output/svg
 #alignment_count=$(cat master_input/allowed_loci.txt | wc -w)
 
 # set path for input files
-alignment_path=~/master_input/all_hits_aligned_renamed
+#alignment_path=~/master_input/all_hits_aligned_renamed
+alignment_path=~/master_input/locus_CRY_full/aligned_files
 
 # get all files, use for full dataset
 alignment_count=$(ls $alignment_path/*.fasta | wc -l)
@@ -62,7 +63,7 @@ echo === starting alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for scoring each alignment
 scoring_function() {
 	locus_in=$(echo "${1##*/}" | cut -d'-' -f1)
-	sbatch ~/genotree/2-1_rate_alignments.sh $locus_in
+	sbatch ~/genotree/2-1_rate_alignments.sh $locus_in $alignment_path
 }
 
 # exports the function so GNU Parallel can access it
@@ -73,8 +74,6 @@ echo "$alignment_files" | parallel --eta --jobs $alignment_count scoring_functio
 
 # waits for all alignments to be rated by checking the squeue command for a certain term
 while squeue -u $USER | grep -q "2-1_rate"; do wait; done
-
-squeue -u $USER
 
 echo === finished alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 
