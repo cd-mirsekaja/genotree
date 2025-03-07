@@ -18,7 +18,6 @@
 
 module load hpc-env/13.1
 module load MAFFT/7.505-GCC-13.1.0-with-extensions
-module load IQ-TREE/2.2.2.7-gompi-2023a
 module load Python/3.11.3-GCCcore-13.1.0
 
 locus_id="$1"

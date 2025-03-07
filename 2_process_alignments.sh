@@ -13,7 +13,7 @@
 # This is a master script for processing multiple sequence alignments.
 # It calls on three other scripts.
 # Input:
-# - a folder containing a number of multiple sequence alignments, the name must end on *-renamed.fasta
+# - a folder containing a number of multiple sequence alignments, the name must end on *.fasta
 # 
 # Output:
 # - a folder containing FASTA files that were filtered, then re-aligned.
@@ -43,17 +43,20 @@ mkdir aligroove_output/txt aligroove_output/svg
 # get only allowed files, use for filtered dataset
 #alignment_count=$(cat master_input/allowed_loci.txt | wc -w)
 
+# set path for input files
+alignment_path=~/master_input/all_hits_aligned_renamed
+
 # get all files, use for full dataset
-alignment_count=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | wc -l)
+alignment_count=$(ls $alignment_path/*.fasta | wc -l)
 
 # save all relevant alignment files with only allowed loci in a variable
-#alignment_files=$(find ~/master_input/all_hits_aligned_renamed/*-renamed.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head)
+#alignment_files=$(find $alignment_path/*.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head -n $alignment_count)
 
 # save all relevant alignment files in a variable
-alignment_files=$(ls ~/master_input/all_hits_aligned_renamed/*-renamed.fasta | head -n $alignment_count)
+alignment_files=$(ls $alignment_path/*.fasta | head -n $alignment_count)
 
 echo == used $alignment_count alignment files: $alignment_files ==
-find ~/master_input/all_hits_aligned_renamed/*-renamed.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head
+find alignment_path/*.fasta -type f -printf "%f\n" | grep -f ~/master_input/allowed_loci.txt | head -n $alignment_count
 
 echo === starting alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 # prepares a function that runs the script for scoring each alignment
@@ -75,14 +78,14 @@ squeue -u $USER
 
 echo === finished alignment scoring at $(date '+%d.%m.%Y %H:%M:%S') ===
 
-mv ~/master_input/all_hits_aligned_renamed/*-renamed.txt ./aligroove_output/txt
-mv ~/master_input/all_hits_aligned_renamed/*-renamed.svg ./aligroove_output/svg
+mv $alignment_path/*.txt ./aligroove_output/txt
+mv $alignment_path/*.svg ./aligroove_output/svg
 
 echo === calculating total mean and median scores ===
 printf "locusID;scoreMedian;scoreMean\n" > total_scores.csv
 
 # calculate total mean and median scores for all alignments
-for file in ./aligroove_output/txt/*-renamed.txt; do
+for file in ./aligroove_output/txt/*.txt; do
     locus_id=$(echo "${file##*/}" | cut -d'_' -f5 | cut -d'-' -f1)
     echo - $locus_id -
     python3 ~/genotree/utilities/total_score.py -f $file -l $locus_id
@@ -92,7 +95,7 @@ done
 mv total_scores.csv ./aligroove_output
 
 # set filter threshold
-threshold=0.5
+threshold=0.35
 echo === filtering alignments for score threshold $threshold ===
 for file in $alignment_files; do
     # get ID for current locus
