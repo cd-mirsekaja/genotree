@@ -4,8 +4,8 @@
 #SBATCH --cpus-per-task=6
 #SBATCH --mem=60G
 #SBATCH --time=0-10:00
-#SBATCH --output=./logs/automatic/align_cry.%j.out
-#SBATCH --error=./logs/automatic/align_cry.%j.err
+#SBATCH --output=/user/rego3475/master_output/logs/align_cry.%j.out
+#SBATCH --error=/user/rego3475/master_output/logs/align_cry.%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=ronja.roesner@uol.de
 
@@ -19,7 +19,7 @@ module load Python/3.11.3-GCCcore-13.1.0
 
 startdate=$(date '+%Y_%m_%d-%H_%M_%S')
 mkdir $WORK/wd-align_cry-$startdate
-wd $WORK/wd-align_cry-$startdate
+cd $WORK/wd-align_cry-$startdate
 
 echo === start time for is $(date '+%H:%M:%S') ===
 
@@ -32,6 +32,7 @@ for file in $file_list; do
     echo === aligning hits for $cry_type at $(date '+%H:%M:%S') ===
     # runs mafft on all combined hits for this exon
     mafft --thread 6 --auto $file > $cry_type-aligned.fasta
+done
 
 mv *-aligned.fasta ./aligned_fasta
 
