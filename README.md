@@ -77,6 +77,7 @@ The pipeline consists of multiple scripts working together. Input files and fold
 [rename_script.py](utilities/rename_script.py) - renames genes in supplied .fasta file for processing with AliGROOVE
 
 [count_sequences.sh](utilities/count_sequences.sh) - counts all sequences within a folder of multiple sequence alignment files
+
 [calculate_pairwise_time.sh](utilities/calculate_pairwise_time.sh) - calculates the time it takes to perform pairwise comparisons on sequences in provided files
 
 [rename_trees.sh](utilities/rename_trees.sh) - calls 3_2_rename_trees.py to rename tips in generated gene trees to the corresponding IDX
