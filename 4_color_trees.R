@@ -34,22 +34,37 @@ setwd("~/Documents/Programming/Bachelorarbeit/tree_recoloring/main")
 # set outgroup for rerooting. 298 is Petromyzon marinus, 359 is Asterias rubens, 362 is Pecten maximus
 outgroup <- "359"
 # set threshold modifier
-threshold <- "thr0_35-realigned"
+threshold <- "thr0_35"
 # set aster version modifier
 aster_ver <- "astral4"
+# OR set cryptochrome version
+cry_type <- "CRY5"
 # set layout for export tree. Can be 'rectangular', 'roundrect', 'circular'.
 tree_layout <- "rectangular"
 
-# load phylotree and plot objects into workspace
+# get functions for loading tree objects
 source("/Users/privatstudium/Documents/Programming/Bachelorarbeit/0_genotree_repository/4-2_load_trees.R")
-loaded_data <- load_supertree(outgroup,threshold,aster_ver,tree_layout)
-savemod <- loaded_data$savemod
-data_matrix <- loaded_data$data_matrix
-out_dir <- loaded_data$out_dir
-rerooted_tree <- loaded_data$rerooted_tree
-renamed_tree <- loaded_data$renamed_tree
-base_plot <- loaded_data$base_plot
-bootstrap_plot <- loaded_data$bootstrap_plot
+
+# EITHER load supertree and plot objects into workspace
+supertree_data <- load_supertree(outgroup,threshold,aster_ver,tree_layout)
+savemod <- supertree_data$savemod
+data_matrix <- supertree_data$data_matrix
+out_dir <- supertree_data$out_dir
+rerooted_tree <- supertree_data$rerooted_tree
+renamed_tree <- supertree_data$renamed_tree
+base_plot <- supertree_data$base_plot
+bootstrap_plot <- supertree_data$bootstrap_plot
+
+# OR load gene tree for a set cryptochrome type
+cry_tree_data <- load_CRY_tree(outgroup,cry_type,threshold,tree_layout)
+savemod <- cry_tree_data$savemod
+data_matrix <- cry_tree_data$data_matrix
+out_dir <- cry_tree_data$out_dir
+rerooted_tree <- cry_tree_data$rerooted_tree
+renamed_tree <- cry_tree_data$renamed_tree
+base_plot <- cry_tree_data$base_plot
+bootstrap_plot <- cry_tree_data$bootstrap_plot
+
 
 # set output paths for saved files
 path_colored <- paste0(out_dir,savemod,"_ColoredPlot_")
@@ -67,7 +82,7 @@ make_reference(rerooted_tree, paste(out_dir, savemod, "_ReferencePlot.pdf", sep 
 ### Annotated Trees ###
 
 # make tree annotated with class
-annotate_by_taxgroup("Class",base_plot,rerooted_tree,path_colored,col_vec = anno_colors_class)
+annotate_by_taxgroup("Class",base_plot,rerooted_tree,path_colored,col_vec = anno_colors_class,fill="rim")
 annotate_by_taxgroup("Class",base_plot,rerooted_tree,path_colored,col_vec = anno_colors_class, include = c("Teleostei","Holostei","Chondrostei","Cladistii","Elasmobranchii"))
 
 # make tree annotated with taxGroup

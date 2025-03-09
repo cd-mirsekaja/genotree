@@ -54,7 +54,12 @@ for row in c:
 genome_string=str(genome_list)
 
 # replaces all unneccessary clutter in the treefile with ":"
+# catch gene names in the consensus supertrees
 treefile_content = re.sub(r'-[A-Za-z0-9_.]+-?\d*-\d+-\d+:', ':', treefile_content)
+# catch gene names in the cryptochrome gene trees
+treefile_content = re.sub(r'__g\d+_t1_ORF_\d+:', ':', treefile_content)
+treefile_content = re.sub(r'__TRINITY_DN\d+_c\d+_g\d+_i\d+_len_\d+_path__[\w-]+__ORF_\d+:', ':', treefile_content)
+treefile_content = re.sub(r'__sprottn3_rep_c\d+____cov_[\d_]+_len_\d+_gc_[\d_]+_nseq_\d+_ORF_\d+:', ':', treefile_content)
 
 # closes connection to the database
 db_conn.close()

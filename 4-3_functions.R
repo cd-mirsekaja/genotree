@@ -374,22 +374,159 @@ trait_tree <- function(save_path, treeplot, trait, color)
 }
 
 # function for constructing tanglegrams for the two supertrees
-tangle_plots <- function(dend_left, dend_right, out_dir,savemod1,savemod2,treename_a,treename_b)
+tangle_plots <- function(tree_left, tree_right, out_dir,savemod1,savemod2,treename_a="",treename_b="",main_name="",rotate_nodes=TRUE)
 {
+  # prune all leaves that are not in both trees
+  if (length(tree_left$tip.label)!=length(tree_right$tip.label))
+  {
+    # get vector containing common tips of both trees
+    common_tips <- intersect(tree_left$tip.label, tree_right$tip.label)
+    # prune leaves that are not in both trees
+    tree_left <- keep.tip(tree_left, common_tips)
+    tree_right <- keep.tip(tree_right, common_tips)
+    # remove duplicate leaves
+    tree_left$tip.label <- make.unique(tree_left$tip.label)
+    tree_right$tip.label <- make.unique(tree_right$tip.label)
+  }
+  
+  # pre-rotate the tree tips for better matching
+  if (rotate_nodes==TRUE)
+  {
+    rotated_trees <- tangler::pre.rotate(tree_left,tree_right)
+    tree_left <- rotated_trees[[1]]
+    tree_right <- rotated_trees[[2]]
+  }
+  
+  # make dendrograms from the phylo trees
+  dend_left <- as.dendrogram.phylo(tree_left)
+  dend_right <- as.dendrogram.phylo(tree_right)
+  
+  # make unmodified tangle plot
   print(paste0("Making Tanglegram for ",treename_a," and ",treename_b,"..."))
   tangle <- tanglegram(dend1 = dend_left, dend2 = dend_right)
+  # set path for saving file
   savepath <- paste0(out_dir,savemod1,"-Tanglegram_Compare-",savemod2,".pdf")
   print(paste0("Plotting Tanglegram for ",treename_a," and ",treename_b,"..."))
+  # open pdf device for saving
   pdf(savepath,width=40,height=45)
+  # modify tangle plot and save it
   plot(tangle,
        main_left = treename_a, main_right = treename_b,
-       main = "Tanglegram of the two main supertrees",
+       main = main_name,
        highlight_branches_col = TRUE,
-       #common_subtrees_color_branches = TRUE,
-       #common_subtrees_color_lines = TRUE,
        margin_top = 10,
        columns_width = c(6,4,6),
        sort = FALSE)
   dev.off()
   print(paste0("Tanglegram for ",treename_a," and ",treename_b," saved as\n",savepath))
+}
+
+
+# make secondary tangle plot with trait annotation
+# can map a boolean trait onto the connection lines (possible values: 0, 1, NA)
+trait_tangle <- function(data_matrix, trait_name, tree_left, tree_right, outgroup, threshold, savemod, rotate_nodes=TRUE)
+{
+  
+  print("getting trait data")
+  # get trait data for all possible genomes
+  
+  trait_data <- setNames(
+    data.frame(data_matrix$mainTipName, data_matrix[[trait_name]]),
+    c("tip.label", trait_name)
+  )
+  
+  # get vector containing common tips of both trees
+  common_tips <- intersect(tree_left$tip.label, tree_right$tip.label)
+  
+  # prune all leaves that are not in both trees
+  if (length(tree_left$tip.label)!=length(tree_right$tip.label))
+  {
+    print("pruning tree and trait data")
+    # remove trait data for tips not in both trees
+    trait_data <- trait_data[trait_data$tip.label %in% common_tips, ]
+    # prune leaves that are not in both trees
+    tree_left <- keep.tip(tree_left, common_tips)
+    tree_right <- keep.tip(tree_right, common_tips)
+    # remove duplicate leaves
+    tree_left$tip.label <- make.unique(tree_left$tip.label)
+    tree_right$tip.label <- make.unique(tree_right$tip.label)
+  }
+  
+  print("preparing metadata")
+  # prepare metadata with dynamic trait column name
+  meta <- data.frame(
+    tip.label = c(common_tips, setdiff(c(tree_left$tip.label, tree_right$tip.label), common_tips)),
+    group = rep(c("A","B"), length.out = Ntip(tree_left) + Ntip(tree_right))
+  )
+  meta <- merge(meta,trait_data,by="tip.label",all_x=TRUE)
+  meta <- meta %>%
+    mutate(
+      !!sym(trait_name) := factor(  # Dynamic column name
+        .data[[trait_name]],  # Safe column access
+        levels = c(0, 1),
+        labels = c("no", "yes")
+      )
+    )
+  # add color column using case_when
+  meta <- meta %>%
+    mutate(
+      trait_color = case_when(
+        is.na(meta[[trait_name]]) ~ "grey",
+        meta[[trait_name]] == "yes" ~ "green1",
+        meta[[trait_name]] == "no" ~ "blue"
+      )
+    )
+  
+  print(table(meta$trait_color,useNA="always"))
+  
+  print(anti_join(meta, data.frame(label = tree_left$tip.label), by = c("tip.label" = "label")))
+  
+  print(all(meta$trait_color %in% colors()))
+  
+  # pre-rotate nodes for better matching
+  if (rotate_nodes==TRUE)
+  {
+    rotated_trees <- tangler::pre.rotate(tree_left,tree_right)
+    tree_left <- rotated_trees[[1]]
+    tree_right <- rotated_trees[[2]]
+    savemod <- paste0("rotated_",savemod)
+  }
+  
+  print("plotting trees")
+
+  
+  # Create ggtree objects
+  gg_left <- ggtree(tree_left) %<+% meta + 
+    geom_tiplab() + 
+    # color tip points. still broken, only colors in grey
+    geom_tippoint(aes(color=as.factor(trait_color)))
+  gg_right <- ggtree(tree_right) %<+% meta + 
+    geom_tiplab()
+  
+  # set colors for line annotation
+  sampletypecolors <- c("no" = "blue", "yes" = "green1")
+  # make tanglegram
+  tangle_common <- common.tanglegram(
+    gg_left,
+    gg_right,
+    trait_name,
+    sampletypecolors,
+    tiplab = TRUE,
+    t2_tiplab_size = 3,
+    lab_pad = 0.5
+  )
+  # display tanglegram
+  plot(tangle_common)
+  # save the generated plot as a pdf file
+  save_path <- paste0(out_dir,"r",outgroup,"-",threshold,"-Tanglegram_Trait-",trait_name,"-",savemod,".pdf")
+  ggsave(
+    save_path,
+    tangle_common,
+    device = "pdf",
+    width = 40,
+    height = 45,
+    limitsize = FALSE
+  )
+  print(paste0("Tangle plot saved as ",save_path))
+  return(tangle_common)
 }
