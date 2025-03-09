@@ -29,7 +29,6 @@ module load hpc-env/13.1
 module load parallel/20230822-GCCcore-13.1.0
 module load HMMER/3.4-gompi-2023a
 module load Python/3.11.3-GCCcore-13.1.0
-#module load R/4.3.1-foss-2023a
 
 # make working directory and move into it
 mkdir $WORK/wd_make_al-$startdate
@@ -44,7 +43,7 @@ mkdir logs/automatic
 touch logfile.log
 touch genome_list.log
 
-# when testing, use these - sets the amount of genomes and loci for checking
+# when testing, use these, sets the amount of genomes and loci for checking
 #genomecount=10
 #locuscount=10
 
@@ -52,7 +51,7 @@ touch genome_list.log
 genomecount=$(ls /nfs/data/zapp2497/genomes/raw_fasta/ | wc -l)
 locuscount=$(ls ~/master_input/locus-fa_1105_nucleotide/ | wc -l)
 
-# sets the amount of cpus that nhmmer should use
+# sets the amount of CPUs that nhmmer should use
 cpu_count=8
 
 # add the working directory and start time to the logfile
@@ -75,7 +74,7 @@ for file in $locus_files; do
 	hmmbuild $file.hmm ~/master_input/locus-fa_1105_nucleotide/$file
 done
 
-#remove unnecessary clutter in file file names by renaming all .hmm files
+# remove unnecessary clutter in file names by renaming all .hmm files
 for f in *.fa.hmm; do mv -- "$f" "${f%.fa.hmm}.hmm"; done
 
 # moves all .hmm files to their respective subdirectory

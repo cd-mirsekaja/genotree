@@ -30,7 +30,7 @@ reroot_tree <- function(phylotree, outgroup = "none")
     print("No outgroup supplied, returning unrooted tree...")
     return(phylotree)
   } else {
-    # get the node for the outgroup for rerooting.
+    # get the node for the outgroup for rerooting
     reroot_node <- ggtree::MRCA(phylotree, .node1 = outgroup)
     # reroot at specified node in the tree
     rerooted_tree <- ape::root(phylotree, reroot_node)
@@ -65,7 +65,7 @@ make_reference <- function(phylotree, savepath)
   ggsave(savepath,reference_plot,device="pdf",dpi=300,width=30,height=75,limitsize=FALSE)
 }
 
-# helper function that gets all descendant tips of a given node.
+# helper function that gets all descendant tips of a given node
 # written with the help of GPT-o3 mini
 get_tips <- function(tree, node) {
   clade <- extract.clade(tree, node)
@@ -75,17 +75,17 @@ get_tips <- function(tree, node) {
 # function to get the highest (maximal) pure clades for a given taxon group.
 # written with the help of GPT-o3 mini
 get_pure_block_nodes <- function(taxgroup, tree, taxgroup_type) {
-  # Get the taxa (e.g., species IDs) that should be in this taxonomic group.
+  # get the taxa (e.g., species IDs) that should be in this taxonomic group.
   taxon_tips <- intersect(data_matrix$IDX[data_matrix[[taxgroup_type]] == taxgroup], tree$tip.label)
   n_tips <- length(tree$tip.label)
   pure_blocks <- c()
   
-  # Loop over all internal nodes
+  # loop over all internal nodes
   for (node in (n_tips + 1):(n_tips + tree$Nnode)) {
     node_tips <- get_tips(tree, node)
-    # Check if the node is pure (all its descendant tips are from taxon_tips)
+    # check if the node is pure (all its descendant tips are from taxon_tips)
     if (all(node_tips %in% taxon_tips)) {
-      # Identify the parent node from the tree edge matrix.
+      # identify the parent node from the tree edge matrix.
       parent <- tree$edge[tree$edge[, 2] == node, 1]
       parent_is_pure <- FALSE
       if (length(parent) > 0) {
@@ -94,33 +94,33 @@ get_pure_block_nodes <- function(taxgroup, tree, taxgroup_type) {
           parent_is_pure <- TRUE
         }
       }
-      # Only record nodes that are not nested within a larger pure block.
+      # only record nodes that are not nested within a larger pure block.
       if (!parent_is_pure) {
         pure_blocks <- c(pure_blocks, node)
       }
     }
   }
   
-  # Return the set of maximal nodes that define pure blocks.
+  # return the set of maximal nodes that define pure blocks.
   return(pure_blocks)
 }
 
 # function that finds the MRCAs for a given taxgroup. Can detect paraphyletic groups
 # written with the help of GPT-o3 mini
 get_mrca <- function(taxgroup, tree, taxgroup_type) {
-  # Get the list of taxa IDs corresponding to the taxon group.
+  # get the list of taxa IDs corresponding to the taxon group.
   taxon_tips <- intersect(data_matrix$IDX[data_matrix[[taxgroup_type]] == taxgroup], tree$tip.label)
   
   if (length(taxon_tips) > 1) {
-    # If the whole group is monophyletic, we get one block.
+    # if the whole group is monophyletic, we get one block.
     if (is.monophyletic(tree, taxon_tips)) {
       return(getMRCA(tree, tip = taxon_tips))
     } else {
-      # For paraphyletic groups, return the maximal pure blocks.
+      # for paraphyletic groups, return the maximal pure blocks.
       return(get_pure_block_nodes(taxgroup, tree, taxgroup_type))
     }
   } else if (length(taxon_tips) == 1) {
-    # For a single tip, simply return that tip's node.
+    # for a single tip, simply return that tip's node.
     return(MRCA(tree, .node1 = taxon_tips))
   } else {
     return("not in tree")
@@ -385,20 +385,20 @@ fast_get_ancestral_state <- function(tree, tip_states) {
   Ntip <- length(tree$tip.label)
   Nnode <- tree$Nnode
   total_nodes <- Ntip + Nnode
-  # Preallocate a vector for all node states; initializing with NA.
+  # preallocate a vector for all node states; initializing with NA.
   states <- rep(NA, total_nodes)
   
-  # Fill in states for the tip nodes.
-  # Ensure tip_states is named with tip labels.
+  # fill in states for the tip nodes.
+  # ensure tip_states is named with tip labels.
   states[1:Ntip] <- tip_states[tree$tip.label]
   
-  # Process internal nodes in numerical order (internal nodes are often > Ntip).
-  # Assuming that for a rooted tree, for every internal node the children have lower numbers.
+  # process internal nodes in numerical order (internal nodes are often > Ntip).
+  # assuming that for a rooted tree, for every internal node the children have lower numbers.
   for (node in (Ntip + 1):total_nodes) {
-    # Get children nodes for this internal node from the edge matrix.
+    # get children nodes for this internal node from the edge matrix.
     children <- tree$edge[tree$edge[, 1] == node, 2]
     child_states <- states[children]
-    # If any child has an NA state or the children disagree, mark as NA.
+    # if any child has an NA state or the children disagree, mark as NA.
     if (any(is.na(child_states)) || length(unique(child_states)) > 1) {
       states[node] <- NA
     } else {
@@ -412,20 +412,20 @@ fast_get_ancestral_state <- function(tree, tip_states) {
 # of a phylotree by the state of a given binary trait
 # written with the help of GPT-4
 color_by_trait <- function(col_plot, char_col_name, cl) {
-  # Assume that rerooted_tree is your tree and tree_data is a tibble version obtained earlier.
+  # assume that rerooted_tree is your tree and tree_data is a tibble version obtained earlier.
   Ntip <- length(rerooted_tree$tip.label)
   
-  # Extract the trait states for the tips from tree_data.
-  # This assumes that tree_data is ordered such that the first Ntip rows correspond to tips.
+  # extract the trait states for the tips from tree_data.
+  # this assumes that tree_data is ordered such that the first Ntip rows correspond to tips.
   tip_states <- tree_data[[char_col_name]][1:Ntip]
-  # Name the tip states with corresponding tip labels.
+  # name the tip states with corresponding tip labels.
   names(tip_states) <- rerooted_tree$tip.label
-  # Compute ancestral states for all nodes using the fast bottom-up approach.
+  # compute ancestral states for all nodes using the fast bottom-up approach.
   ancestral_states <- fast_get_ancestral_state(rerooted_tree, tip_states)
-  # Add the ancestral state information to tree_data.
+  # add the ancestral state information to tree_data.
   tree_data$char_in <- ancestral_states
   
-  # Build the plot using ggtree, mapping the computed states onto branches and tips.
+  # build the plot using ggtree, mapping the computed states onto branches and tips.
   col_plot <- col_plot %<+% tree_data +
     geom_tree(aes(shape = factor(char_in), color = factor(char_in))) +
     geom_tippoint(aes(color = factor(char_in)), size = 3) +
@@ -580,7 +580,7 @@ trait_tangle <- function(data_matrix, trait_name, tree_left, tree_right, outgrou
   print("plotting trees")
 
   
-  # Create ggtree objects
+  # create ggtree objects
   gg_left <- ggtree(tree_left) %<+% meta + 
     geom_tiplab() + 
     # color tip points. still broken, only colors in grey

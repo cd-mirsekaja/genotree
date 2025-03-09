@@ -35,7 +35,7 @@ setwd("~/Documents/Programming/Bachelorarbeit/tree_recoloring/main")
 # set outgroup for rerooting. 298 is Petromyzon marinus, 359 is Asterias rubens, 362 is Pecten maximus
 outgroup <- "359"
 # set threshold modifier
-threshold <- "thr0_35"
+threshold <- "thr0_35-realigned"
 # set aster version modifier
 aster_ver <- "astral4"
 # OR set cryptochrome version
@@ -57,14 +57,14 @@ base_plot <- supertree_data$base_plot
 bootstrap_plot <- supertree_data$bootstrap_plot
 
 # OR load gene tree for a set cryptochrome type
-cry_tree_data <- load_CRY_tree(outgroup,cry_type,threshold,tree_layout)
-savemod <- cry_tree_data$savemod
-data_matrix <- cry_tree_data$data_matrix
-out_dir <- cry_tree_data$out_dir
-rerooted_tree <- cry_tree_data$rerooted_tree
-renamed_tree <- cry_tree_data$renamed_tree
-base_plot <- cry_tree_data$base_plot
-bootstrap_plot <- cry_tree_data$bootstrap_plot
+#cry_tree_data <- load_CRY_tree(outgroup,cry_type,threshold,tree_layout)
+#savemod <- cry_tree_data$savemod
+#data_matrix <- cry_tree_data$data_matrix
+#out_dir <- cry_tree_data$out_dir
+#rerooted_tree <- cry_tree_data$rerooted_tree
+#renamed_tree <- cry_tree_data$renamed_tree
+#base_plot <- cry_tree_data$base_plot
+#bootstrap_plot <- cry_tree_data$bootstrap_plot
 
 
 # set output paths for saved files
@@ -129,9 +129,12 @@ if (aster_ver=="astral4") {
   birds <- make_annotation_subtree(407,"Aves",rerooted_tree,path_subtree,export=FALSE)
   mammals <- make_annotation_subtree(457,"Mammalia",rerooted_tree,path_subtree,export=FALSE)
   
-  subplot_data <- make_picture_subtree(birds$subtree,"Aves",out_dir,savemod,export=TRUE,uuids = subplot_data$uuid_df)
+  make_picture_subtree(anguilliformes$subtree,"Anguilliformes",out_dir,savemod,export=TRUE)
+  make_picture_subtree(salmoniformes$subtree,"Salmoniformes",out_dir,savemod,export=TRUE)
+  make_picture_subtree(birds$subtree,"Aves",out_dir,savemod,export=TRUE)
+  make_picture_subtree(mammals$subtree,"Mammalia",out_dir,savemod,export=TRUE)
   
-  plot(subplot_data$subplot)
+ 
 
  } else if (aster_ver=="astral-pro3") {
   # block for ASTRAL-Pro3

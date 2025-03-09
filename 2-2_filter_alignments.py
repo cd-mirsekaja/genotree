@@ -3,7 +3,9 @@
 """
 @author: Ronja Rösner
 
-Gets an aligroove score matrix, an alignment file, a maximum threshold and a locus id as inputs. Outputs table containing all values from the input matrix that are below the threshold with their corresponding row and column names as well as an alignment file filtered for the threshold.
+Gets an AliGROOVE score matrix, an alignment file, a maximum threshold and a locus id as inputs. 
+Outputs table containing all values from the input matrix that are below the threshold with their
+corresponding row and column names as well as an alignment file filtered for the threshold.
 """
 
 import pandas as pd # type: ignore
@@ -23,7 +25,7 @@ score_matrix = pd.read_csv(args.input_table,sep="\t",index_col=0)
 # create filtered matrix with only values lower than or equal to the threshold
 filtered_matrix = score_matrix.where(score_matrix <= args.threshold)
 
-# the following 4 lines were written with the help of ChatGPT
+# the following 4 lines were written with the help of GPT-4
 # Stack the filtered matrix to get row indices, column names, and values
 low_values = filtered_matrix.stack().reset_index()
 low_values.columns = ['Row', 'Column', 'Value']
@@ -39,15 +41,20 @@ with open(f"{args.locus_id}_{args.threshold}-values"+".csv","w") as file:
 	low_values.to_csv(file, sep=';', index=False, header=['Column', 'Row', 'Value (rounded)'])
 	print(f"Low values saved as {file.name}")
 
-
+# save filtered alignment to output file
 with open(args.input_alignment) as alignment_content, open(f"{args.locus_id}-{args.threshold}-filtered.fasta", "w") as new_alignment:
-	write_flag = True  # Determines whether to write lines to output
+	# determines whether to write lines to output
+	write_flag = True 
 	for line in alignment_content:
-		if line.startswith(">"):  # If it's a headline
-			item_id = line[1:].strip()  # Extract item ID (remove > and strip whitespace)
-			write_flag = item_id not in low_values  # Set write_flag based on item_id presence in low_values
+		# check if the current line is a gene sequence name
+		if line.startswith(">"):
+			# get the name of the sequence
+			item_id = line[1:].strip()
+			 # set write_flag based on the presence of the gene sequence in low_values
+			write_flag = item_id not in low_values 
 		if write_flag:
-			new_alignment.write(line)  # Write line to the output file
+			# write line to the output file
+			new_alignment.write(line)
 	
 	print(f"Filtered alignment written to {new_alignment.name}")
 
