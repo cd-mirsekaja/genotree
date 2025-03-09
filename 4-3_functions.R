@@ -246,6 +246,7 @@ make_comparison_subtree <- function(input_node,clade,phylotree,path,wd=10,ht=10,
 make_annotation_subtree <- function(input_node,clade,phylotree,path,anno_group="none",tree_layout="roundrect",reroot_node="none",node_labels=FALSE,anno_color="blue",wd=10,ht=10,export=TRUE,output_format="pdf")
 {
   print(paste("=== Generating Annotated Subtree for ",clade," ===",sep=""))
+  
   all_subtrees <- subtrees(phylotree)
   for (entry in all_subtrees) {
     if (entry$name==input_node){
@@ -259,7 +260,7 @@ make_annotation_subtree <- function(input_node,clade,phylotree,path,anno_group="
     if (reroot_node!="none")
     { sub_tree <- reroot_tree(sub_tree,reroot_node) }
     
-    renamed_subtree <- rename_taxa(sub_tree, data_matrix, key = 1, value = mainTipName)
+    renamed_subtree <- rename_taxa(sub_tree, data_matrix, key = 1, value = ScientificName)
     sub_plot <- ggtree(renamed_subtree,layout=tree_layout)
     if (node_labels==TRUE) {
     sub_plot <- sub_plot +
@@ -286,11 +287,95 @@ make_annotation_subtree <- function(input_node,clade,phylotree,path,anno_group="
     out_plot <- annotate_by_taxgroup(anno_group,sub_plot,sub_tree,path=save_path,colorscheme=anno_color,wd=wd,ht=ht,export=export,output_format=output_format)
   } else {
     out_plot <- sub_plot
-    save_path <- paste0(save_path,".",output_format)
-    ggsave(save_path,out_plot,device=output_format,width=wd,height=ht,limitsize=FALSE,units="in")
-    print(paste0("Subtree saved as ",save_path))
+    if (export==TRUE)
+    {
+      save_path <- paste0(save_path,".",output_format)
+      ggsave(save_path,out_plot,device=output_format,width=wd,height=ht,limitsize=FALSE,units="in")
+      print(paste0("Subtree saved as ",save_path))
+    }
   }
-  return(out_plot)
+  return_list <- list(
+    subtree=renamed_subtree,
+    subplot=out_plot)
+  return(return_list)
+}
+
+# function for adding phylopic images to the tips of an existing phylo subtree
+make_picture_subtree <- function(subtree, subgroup, save_path,save_mod, uuids=data.frame(name=character(), uid=character()), export=TRUE, tree_layout="roundrect")
+{
+  tip_count <- length(subtree$tip.label)
+  
+  # perform uuid search if no or the wrong amount of uuids were given
+  if (length(uuids$name)!=tip_count)
+  {
+    print(paste0("PhyloPic image search for ",tip_count, " species..."))
+    # reset data frame to empty state
+    uuids=data.frame(name=character(), uid=character())
+    # get uuids for each species in the tree
+    for (species in subtree$tip.label)
+    {
+      # get uuid for the current species, if it exists on phylopic
+      uuid <- try(get_uuid(name = species),silent = TRUE)
+      
+      # if species is not on phylopic, search for genus
+      if (inherits(uuid, "try-error"))
+      { 
+        print(paste0(species," not available on phylopic. Trying genus search."))
+        genus <- unlist(strsplit(species," "))[1]
+        uuid <- try(get_uuid(name = genus),silent = TRUE)
+        # if genus is not on phylopic, skip species
+        if (inherits(uuid, "try-error"))
+        {
+          print(paste0(genus, " not available on phylopic. Using generic image for subgroup (", subgroup, ")."))
+          # add empty uuid to the dataframe
+          uuid <- get_uuid(name = subgroup)
+          uuids[nrow(uuids) + 1,] = c(species, uuid)
+        }
+        # add genusuid to the dataframe
+        else
+        { uuids[nrow(uuids) + 1,] = c(species, uuid) }
+      }
+      # add species uuid to the dataframe
+      else
+      { uuids[nrow(uuids) + 1,] = c(species, uuid) }
+      
+      # print the current species and uuid to the console
+      print(paste0(species,": ",uuid))
+    }
+    print("PhyloPic search completed...")
+  }
+  
+  print("Making Subtree Plot...")
+  if (tip_count < 15)
+  {
+    print("Taxa count lower than 15, larger silhouette size")
+    subplot <- ggtree(subtree, layout=tree_layout) %<+% uuids +
+      geom_tiplab(aes(image=uid), size=0.2, geom="phylopic", offset=1, align = TRUE) +
+      geom_tiplab(aes(label=label), offset = .05, vjust = -1) + xlim(NA, 2) +
+      scale_color_viridis_c()
+  } else {
+    print("Taxa count higher than 15, smaller silhouette size")
+    subplot <- ggtree(subtree, layout=tree_layout) %<+% uuids +
+      geom_tiplab(aes(image=uid), size=0.02, geom="phylopic", offset=1, align = TRUE) +
+      geom_tiplab(aes(label=label), offset = .05, vjust = -1) + xlim(NA, 2) +
+      scale_color_viridis_c()
+  }
+  
+  # export the plot if specified
+  if (export==TRUE)
+  { 
+    out_path <- paste0(save_path,save_mod,"_SubtreePlot_Pictures_",subgroup,".png")
+    # set the height of the plot to the nearest round 5 from the amount of taxa
+    plot_height <- ceiling(tip_count / 5) * 5
+    ggsave(out_path,subplot,device = "png", width = 10,height=plot_height) 
+    print(paste0("Image saved to ", out_path))
+  }
+  # return the subplot
+  return_list <- list(
+    subplot = subplot,
+    uuid_df = uuids
+  )
+  return(return_list)
 }
 
 

@@ -22,6 +22,7 @@ library(treeio)
 library(phytools)
 library(geiger)
 library(randomcoloR)
+library(rphylopic)
 library(DBI) # SQLite-Library
 library(glue) # for making nice text
 library(svglite) # for exporting trees as svg for manual annotation
@@ -122,8 +123,17 @@ if (aster_ver=="astral4") {
   
   make_annotation_subtree(557,"Salmoniformes",rerooted_tree,path_subtree,output_format="jpeg",export=TRUE,wd=15,ht=5)
   make_annotation_subtree(513,"Anguilliformes",rerooted_tree,path_subtree,output_format="jpeg",export=TRUE,wd=15,ht=5)
+  
+  anguilliformes <- make_annotation_subtree(513,"Anguilliformes",rerooted_tree,path_subtree,export=FALSE)
+  salmoniformes <- make_annotation_subtree(557,"Salmoniformes",rerooted_tree,path_subtree,export=FALSE)
+  birds <- make_annotation_subtree(407,"Aves",rerooted_tree,path_subtree,export=FALSE)
+  mammals <- make_annotation_subtree(457,"Mammalia",rerooted_tree,path_subtree,export=FALSE)
+  
+  subplot_data <- make_picture_subtree(birds$subtree,"Aves",out_dir,savemod,export=TRUE,uuids = subplot_data$uuid_df)
+  
+  plot(subplot_data$subplot)
 
-} else if (aster_ver=="astral-pro3") {
+ } else if (aster_ver=="astral-pro3") {
   # block for ASTRAL-Pro3
   # with the main tree on the left
   make_comparison_subtree(419,"Birds",renamed_tree,path_subtree,10,10)
