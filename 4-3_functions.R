@@ -12,6 +12,8 @@
 # make_annotation_subtree
 # trait_tree
 # tangle_plots
+# trait_tangle
+# calculate_bootstrap
 # 
 # Helper functions for internal use:
 # get_tips
@@ -614,4 +616,24 @@ trait_tangle <- function(data_matrix, trait_name, tree_left, tree_right, outgrou
   )
   print(paste0("Tangle plot saved as ",save_path))
   return(tangle_common)
+}
+
+# function for calculating the mean bootstrap value of a phylo tree
+calculate_bootstrap <- function(phylotree, return_value=FALSE)
+{
+  # extract bootstrap values
+  bs_values <- phylotree$node.label
+  # turn bootstrap values numeric
+  numeric_bs <- as.numeric(bs_values)
+  # remove NA values if they exist
+  numeric_bs <- numeric_bs[!is.na(numeric_bs)]
+  # calculate mean bootstrap values
+  mean_bs <- mean(numeric_bs)
+  # if the bootstrap is given as 0.xy, turn it into percentage
+  if (mean_bs<1)
+  { mean_bs <- mean_bs*100 }
+  # print mean value and return it if specified
+  print(paste0("Mean bootrap value for this tree: ",round(mean_bs, digits=2),"%"))
+  if (return_value==TRUE)
+  { return(mean_bs) }
 }
