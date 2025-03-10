@@ -93,7 +93,7 @@ load_CRY_tree <- function(outgroup, cry_type, threshold, tree_layout)
     base_plot <- base_plot+theme_tree2()+geom_rootpoint()+geom_tiplab(offset=0.5)+geom_treescale()+theme_tree()
   }
   
-  bootstrap_plot <- get_bootstrap_plot(renamed_tree)
+  bootstrap_plot <- get_bootstrap_plot(renamed_tree, filter_value = 95)
   
   return_list <- list(
     treefile=treefile,
