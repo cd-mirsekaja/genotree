@@ -12,7 +12,6 @@
 
 # remove all variables from environment
 rm(list=ls())
-
 # load required libraries
 library(data.tree)
 library(ape)
@@ -33,16 +32,16 @@ source("/Users/privatstudium/Documents/Programming/Bachelorarbeit/0_genotree_rep
 setwd("~/Documents/Programming/Bachelorarbeit/tree_recoloring/main")
 
 # set outgroup for rerooting. 298 is Petromyzon marinus, 359 is Asterias rubens, 362 is Pecten maximus
-outgroup <- "359"
+outgroup <- "none"
 # set threshold modifier
 threshold <- "thr0_35-realigned"
 threshold_CRY <- "thr0_35"
 # set type of tree
-tree_type <- "SUPERTREE"
+tree_type <- "CRY"
 # set aster version modifier
 aster_ver <- "astralpro3"
 # OR set cryptochrome version
-cry_type <- "CRY5"
+cry_type <- "CRY4"
 # set layout for export tree. Can be 'rectangular', 'roundrect', 'circular'.
 tree_layout <- "rectangular"
 
@@ -76,7 +75,7 @@ if (tree_type=="SUPERTREE")
 }
 
 # get mean bootstrap value
-calculate_bootstrap(renamed_tree)
+calculate_bootstrap(renamed_tree,return_values = TRUE)
 
 # set output paths for saved files
 path_colored <- paste0(out_dir,savemod,"_ColoredPlot_")

@@ -262,7 +262,7 @@ make_annotation_subtree <- function(input_node,clade,phylotree,path,anno_group="
     if (reroot_node!="none")
     { sub_tree <- reroot_tree(sub_tree,reroot_node) }
     
-    renamed_subtree <- rename_taxa(sub_tree, data_matrix, key = 1, value = ScientificName)
+    renamed_subtree <- rename_taxa(sub_tree, data_matrix, key = 1, value = mainTipName)
     sub_plot <- ggtree(renamed_subtree,layout=tree_layout)
     if (node_labels==TRUE) {
     sub_plot <- sub_plot +
@@ -305,6 +305,9 @@ make_annotation_subtree <- function(input_node,clade,phylotree,path,anno_group="
 # function for adding phylopic images to the tips of an existing phylo subtree
 make_picture_subtree <- function(subtree, subgroup, save_path,save_mod, uuids=data.frame(name=character(), uid=character()), export=TRUE, tree_layout="roundrect")
 {
+  # rename tree tips to scientific names for image search
+  subtree <- rename_taxa(subtree, data_matrix, key = mainTipName, value = ScientificName)
+  # get the amount of tips for this tree
   tip_count <- length(subtree$tip.label)
   
   # perform uuid search if no or the wrong amount of uuids were given
@@ -619,7 +622,7 @@ trait_tangle <- function(data_matrix, trait_name, tree_left, tree_right, outgrou
 }
 
 # function for calculating the mean bootstrap value of a phylo tree
-calculate_bootstrap <- function(phylotree, return_value=FALSE)
+calculate_bootstrap <- function(phylotree, return_values=FALSE)
 {
   # extract bootstrap values
   bs_values <- phylotree$node.label
@@ -627,13 +630,24 @@ calculate_bootstrap <- function(phylotree, return_value=FALSE)
   numeric_bs <- as.numeric(bs_values)
   # remove NA values if they exist
   numeric_bs <- numeric_bs[!is.na(numeric_bs)]
-  # calculate mean bootstrap values
+  # calculate mean bootstrap value
   mean_bs <- mean(numeric_bs)
+  # calculate median bootstrap value
+  median_bs <- median(numeric_bs)
   # if the bootstrap is given as 0.xy, turn it into percentage
-  if (mean_bs<1)
+  if (mean_bs<=1)
   { mean_bs <- mean_bs*100 }
+  # if the bootstrap is given as 0.xy, turn it into percentage
+  if (median_bs<=1)
+  { median_bs <- median_bs*100 }
   # print mean value and return it if specified
   print(paste0("Mean bootrap value for this tree: ",round(mean_bs, digits=2),"%"))
-  if (return_value==TRUE)
-  { return(mean_bs) }
+  if (return_values==TRUE)
+  { 
+    return_list <- list(
+      mean_bootstrap=mean_bs,
+      median_bootstrap=median_bs
+    )
+    return(return_list) 
+  }
 }
