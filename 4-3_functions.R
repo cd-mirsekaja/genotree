@@ -583,8 +583,6 @@ trait_tangle <- function(data_matrix, trait_name, tree_left, tree_right, outgrou
   }
   
   print("plotting trees")
-
-  
   # create ggtree objects
   gg_left <- ggtree(tree_left) %<+% meta + 
     geom_tiplab() + 
@@ -622,7 +620,7 @@ trait_tangle <- function(data_matrix, trait_name, tree_left, tree_right, outgrou
 }
 
 # function for calculating the mean bootstrap value of a phylo tree
-calculate_bootstrap <- function(phylotree, return_values=FALSE)
+calculate_bootstrap <- function(phylotree, savemod, return_values=FALSE)
 {
   # extract bootstrap values
   bs_values <- phylotree$node.label
@@ -641,7 +639,9 @@ calculate_bootstrap <- function(phylotree, return_values=FALSE)
   if (median_bs<=1)
   { median_bs <- median_bs*100 }
   # print mean value and return it if specified
-  print(paste0("Mean bootrap value for this tree: ",round(mean_bs, digits=2),"%"))
+  print(paste0("Values for ",savemod,": "))
+  print(paste0("Mean bootstrap value: ", round(mean_bs, digits=2),"%"))
+  print(paste0("Median bootstrap value: ", round(median_bs, digits=2),"%"))
   if (return_values==TRUE)
   { 
     return_list <- list(
