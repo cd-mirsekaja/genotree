@@ -114,7 +114,7 @@ load_matrix <- function(outgroup)
 {
   # import data matrix from SQLite database
   db_conn <- dbConnect(RSQLite::SQLite(), "data/genotree_master_library_corrected.db")
-  matrix_query <- "SELECT ids.IDX, ids.AccessionNumber, taxonomy.ScientificName, taxonomy.Authority, taxonomy.Phylum, taxonomy.Gigaclass, taxonomy.Class, taxonomy.'Order', taxonomy.Family, taxonomy.Genus, taxonomy.taxGroup, traits.isMarine, traits.isBrackish, traits.isFresh, traits.isAllWater, traits.isMarineFresh, traits.isTerrestrial, traits.isMigratory
+  matrix_query <- "SELECT ids.IDX, ids.AccessionNumber, taxonomy.ScientificName, taxonomy.Authority, taxonomy.Phylum, taxonomy.Gigaclass, taxonomy.Class, taxonomy.taxOrder, taxonomy.Family, taxonomy.Genus, taxonomy.taxGroup, traits.isMarine, traits.isBrackish, traits.isFresh, traits.isAllWater, traits.isMarineFresh, traits.isTerrestrial, traits.isMigratory
   FROM ids 
   INNER JOIN taxonomy 
   ON ids.IDX = taxonomy.IDX
@@ -123,6 +123,8 @@ load_matrix <- function(outgroup)
   data_matrix <- dbGetQuery(db_conn, matrix_query)
   outgroup_name <- dbGetQuery(db_conn, glue_sql(.con=db_conn,"SELECT ScientificName FROM taxonomy WHERE IDX={outgroup}"))$ScientificName
   dbDisconnect(db_conn)
+  # rename taxOrder column from SQLite database to Order in dataframe
+  colnames(data_matrix)[which(names(data_matrix) == "taxOrder")] <- "Order"
   
   return(list(data_matrix=data_matrix, outgroup_name=outgroup_name))
 }
